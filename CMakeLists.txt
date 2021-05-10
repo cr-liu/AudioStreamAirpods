@@ -11,6 +11,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# set(CMAKE_XCODE_ATTRIBUTE_APPLICATION_EXTENSION_API_ONLY "NO")
+
 # QtCreator supports the following variables for Android, which are identical to qmake Android variables.
 # Check https://doc.qt.io/qt/deployment-android.html for more information.
 # They need to be set before the find_package(...) calls below.
@@ -31,6 +33,8 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
 set(PROJECT_SOURCES
         src/main.cpp
         src/gui/qml.qrc
+        src/objc/objcapi.h
+        src/objc/objcapi.mm
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -60,9 +64,10 @@ target_link_libraries(AudioStreamAirpods
   Qt${QT_VERSION_MAJOR}::Network)
 
 set_target_properties(AudioStreamAirpods PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+#  MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/Info.plist
+  MACOSX_BUNDLE_GUI_IDENTIFIER "com.manebell.\${PRODUCT_NAME}"
+  MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+  MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
