@@ -35,6 +35,8 @@ set(PROJECT_SOURCES
         src/gui/qml.qrc
         src/objc/objcapi.h
         src/objc/objcapi.mm
+        src/objc/airpodsmotionobjc.h
+        src/objc/airpodsmotionobjc.mm
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
