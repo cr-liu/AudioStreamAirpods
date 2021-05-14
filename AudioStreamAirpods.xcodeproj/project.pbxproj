@@ -1,0 +1,353 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5A3F88CA264CB03500A19E5E /* AudioStreamAirpodsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88C9264CB03500A19E5E /* AudioStreamAirpodsApp.swift */; };
+		5A3F88CC264CB03500A19E5E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88CB264CB03500A19E5E /* ContentView.swift */; };
+		5A3F88CE264CB03800A19E5E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A3F88CD264CB03800A19E5E /* Assets.xcassets */; };
+		5A3F88D1264CB03800A19E5E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A3F88D0264CB03800A19E5E /* Preview Assets.xcassets */; };
+		5A3F88D9264CE49200A19E5E /* SensorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88D8264CE49200A19E5E /* SensorView.swift */; };
+		5A3F88DB264CF52D00A19E5E /* AirpodsIMU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88DA264CF52D00A19E5E /* AirpodsIMU.swift */; };
+		5A3F88DD264D090500A19E5E /* AudioIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88DC264D090500A19E5E /* AudioIO.swift */; };
+		5A3F88DF264E3B9100A19E5E /* HeadMotionScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88DE264E3B9100A19E5E /* HeadMotionScene.swift */; };
+		5A3F88E1264E3D7200A19E5E /* toy_robot_vintage.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 5A3F88E0264E3D7200A19E5E /* toy_robot_vintage.usdz */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5A3F88C6264CB03500A19E5E /* AudioStreamAirpods.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioStreamAirpods.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5A3F88C9264CB03500A19E5E /* AudioStreamAirpodsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStreamAirpodsApp.swift; sourceTree = "<group>"; };
+		5A3F88CB264CB03500A19E5E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		5A3F88CD264CB03800A19E5E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5A3F88D0264CB03800A19E5E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		5A3F88D2264CB03800A19E5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5A3F88D8264CE49200A19E5E /* SensorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorView.swift; sourceTree = "<group>"; };
+		5A3F88DA264CF52D00A19E5E /* AirpodsIMU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirpodsIMU.swift; sourceTree = "<group>"; };
+		5A3F88DC264D090500A19E5E /* AudioIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioIO.swift; sourceTree = "<group>"; };
+		5A3F88DE264E3B9100A19E5E /* HeadMotionScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadMotionScene.swift; sourceTree = "<group>"; };
+		5A3F88E0264E3D7200A19E5E /* toy_robot_vintage.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = toy_robot_vintage.usdz; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5A3F88C3264CB03500A19E5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5A3F88BD264CB03500A19E5E = {
+			isa = PBXGroup;
+			children = (
+				5A3F88C8264CB03500A19E5E /* AudioStreamAirpods */,
+				5A3F88C7264CB03500A19E5E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5A3F88C7264CB03500A19E5E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5A3F88C6264CB03500A19E5E /* AudioStreamAirpods.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5A3F88C8264CB03500A19E5E /* AudioStreamAirpods */ = {
+			isa = PBXGroup;
+			children = (
+				5A3F88C9264CB03500A19E5E /* AudioStreamAirpodsApp.swift */,
+				5A3F88CB264CB03500A19E5E /* ContentView.swift */,
+				5A3F88D8264CE49200A19E5E /* SensorView.swift */,
+				5A3F88DC264D090500A19E5E /* AudioIO.swift */,
+				5A3F88DA264CF52D00A19E5E /* AirpodsIMU.swift */,
+				5A3F88CD264CB03800A19E5E /* Assets.xcassets */,
+				5A3F88DE264E3B9100A19E5E /* HeadMotionScene.swift */,
+				5A3F88E0264E3D7200A19E5E /* toy_robot_vintage.usdz */,
+				5A3F88D2264CB03800A19E5E /* Info.plist */,
+				5A3F88CF264CB03800A19E5E /* Preview Content */,
+			);
+			path = AudioStreamAirpods;
+			sourceTree = "<group>";
+		};
+		5A3F88CF264CB03800A19E5E /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				5A3F88D0264CB03800A19E5E /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5A3F88C5264CB03500A19E5E /* AudioStreamAirpods */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5A3F88D5264CB03800A19E5E /* Build configuration list for PBXNativeTarget "AudioStreamAirpods" */;
+			buildPhases = (
+				5A3F88C2264CB03500A19E5E /* Sources */,
+				5A3F88C3264CB03500A19E5E /* Frameworks */,
+				5A3F88C4264CB03500A19E5E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AudioStreamAirpods;
+			productName = AudioStreamAirpods;
+			productReference = 5A3F88C6264CB03500A19E5E /* AudioStreamAirpods.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5A3F88BE264CB03500A19E5E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1250;
+				LastUpgradeCheck = 1250;
+				TargetAttributes = {
+					5A3F88C5264CB03500A19E5E = {
+						CreatedOnToolsVersion = 12.5;
+					};
+				};
+			};
+			buildConfigurationList = 5A3F88C1264CB03500A19E5E /* Build configuration list for PBXProject "AudioStreamAirpods" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 5A3F88BD264CB03500A19E5E;
+			productRefGroup = 5A3F88C7264CB03500A19E5E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5A3F88C5264CB03500A19E5E /* AudioStreamAirpods */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5A3F88C4264CB03500A19E5E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5A3F88D1264CB03800A19E5E /* Preview Assets.xcassets in Resources */,
+				5A3F88CE264CB03800A19E5E /* Assets.xcassets in Resources */,
+				5A3F88E1264E3D7200A19E5E /* toy_robot_vintage.usdz in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5A3F88C2264CB03500A19E5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5A3F88DB264CF52D00A19E5E /* AirpodsIMU.swift in Sources */,
+				5A3F88CC264CB03500A19E5E /* ContentView.swift in Sources */,
+				5A3F88DF264E3B9100A19E5E /* HeadMotionScene.swift in Sources */,
+				5A3F88CA264CB03500A19E5E /* AudioStreamAirpodsApp.swift in Sources */,
+				5A3F88D9264CE49200A19E5E /* SensorView.swift in Sources */,
+				5A3F88DD264D090500A19E5E /* AudioIO.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5A3F88D3264CB03800A19E5E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		5A3F88D4264CB03800A19E5E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5A3F88D6264CB03800A19E5E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"AudioStreamAirpods/Preview Content\"";
+				DEVELOPMENT_TEAM = 67SU59PVRY;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = AudioStreamAirpods/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = Inc.ATR.AudioStreamAirpods;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5A3F88D7264CB03800A19E5E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"AudioStreamAirpods/Preview Content\"";
+				DEVELOPMENT_TEAM = 67SU59PVRY;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = AudioStreamAirpods/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = Inc.ATR.AudioStreamAirpods;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5A3F88C1264CB03500A19E5E /* Build configuration list for PBXProject "AudioStreamAirpods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5A3F88D3264CB03800A19E5E /* Debug */,
+				5A3F88D4264CB03800A19E5E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5A3F88D5264CB03800A19E5E /* Build configuration list for PBXNativeTarget "AudioStreamAirpods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5A3F88D6264CB03800A19E5E /* Debug */,
+				5A3F88D7264CB03800A19E5E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5A3F88BE264CB03500A19E5E /* Project object */;
+}
