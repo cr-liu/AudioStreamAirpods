@@ -9,9 +9,10 @@ import SwiftUI
 
 struct SensorView: View {
     @ObservedObject var audioIO: AudioIO
+    @EnvironmentObject var headmotionVM: HeadmotionViewModel
     
     var imuAvailable: Bool {
-        false
+        headmotionVM.imuAvailable
     }
     
     var body: some View {
@@ -35,6 +36,9 @@ struct SensorView: View {
             }.padding()
             
             HeadMotionScene()
+                .onDisappear(perform: {
+                    headmotionVM.stopMotionUpdate()
+                })
             
             Spacer()
             
@@ -68,5 +72,6 @@ struct SensorView: View {
 struct SensorView_Previews: PreviewProvider {
     static var previews: some View {
         SensorView(audioIO: AudioIO())
+            .environmentObject(HeadmotionViewModel())
     }
 }

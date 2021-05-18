@@ -12,10 +12,10 @@
 		5A3F88CE264CB03800A19E5E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A3F88CD264CB03800A19E5E /* Assets.xcassets */; };
 		5A3F88D1264CB03800A19E5E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A3F88D0264CB03800A19E5E /* Preview Assets.xcassets */; };
 		5A3F88D9264CE49200A19E5E /* SensorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88D8264CE49200A19E5E /* SensorView.swift */; };
-		5A3F88DB264CF52D00A19E5E /* AirpodsIMU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88DA264CF52D00A19E5E /* AirpodsIMU.swift */; };
 		5A3F88DD264D090500A19E5E /* AudioIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88DC264D090500A19E5E /* AudioIO.swift */; };
 		5A3F88DF264E3B9100A19E5E /* HeadMotionScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88DE264E3B9100A19E5E /* HeadMotionScene.swift */; };
 		5A3F88E1264E3D7200A19E5E /* toy_robot_vintage.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 5A3F88E0264E3D7200A19E5E /* toy_robot_vintage.usdz */; };
+		5A47AFCB265238E5000BAD9A /* HeadmotionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A47AFCA265238E5000BAD9A /* HeadmotionViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,10 +26,10 @@
 		5A3F88D0264CB03800A19E5E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5A3F88D2264CB03800A19E5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5A3F88D8264CE49200A19E5E /* SensorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorView.swift; sourceTree = "<group>"; };
-		5A3F88DA264CF52D00A19E5E /* AirpodsIMU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirpodsIMU.swift; sourceTree = "<group>"; };
 		5A3F88DC264D090500A19E5E /* AudioIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioIO.swift; sourceTree = "<group>"; };
 		5A3F88DE264E3B9100A19E5E /* HeadMotionScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadMotionScene.swift; sourceTree = "<group>"; };
 		5A3F88E0264E3D7200A19E5E /* toy_robot_vintage.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = toy_robot_vintage.usdz; sourceTree = "<group>"; };
+		5A47AFCA265238E5000BAD9A /* HeadmotionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadmotionViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,10 +63,10 @@
 			isa = PBXGroup;
 			children = (
 				5A3F88C9264CB03500A19E5E /* AudioStreamAirpodsApp.swift */,
+				5A47AFCA265238E5000BAD9A /* HeadmotionViewModel.swift */,
 				5A3F88CB264CB03500A19E5E /* ContentView.swift */,
 				5A3F88D8264CE49200A19E5E /* SensorView.swift */,
 				5A3F88DC264D090500A19E5E /* AudioIO.swift */,
-				5A3F88DA264CF52D00A19E5E /* AirpodsIMU.swift */,
 				5A3F88CD264CB03800A19E5E /* Assets.xcassets */,
 				5A3F88DE264E3B9100A19E5E /* HeadMotionScene.swift */,
 				5A3F88E0264E3D7200A19E5E /* toy_robot_vintage.usdz */,
@@ -154,12 +154,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5A3F88DB264CF52D00A19E5E /* AirpodsIMU.swift in Sources */,
 				5A3F88CC264CB03500A19E5E /* ContentView.swift in Sources */,
 				5A3F88DF264E3B9100A19E5E /* HeadMotionScene.swift in Sources */,
 				5A3F88CA264CB03500A19E5E /* AudioStreamAirpodsApp.swift in Sources */,
 				5A3F88D9264CE49200A19E5E /* SensorView.swift in Sources */,
 				5A3F88DD264D090500A19E5E /* AudioIO.swift in Sources */,
+				5A47AFCB265238E5000BAD9A /* HeadmotionViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
