@@ -35,10 +35,7 @@ struct SensorView: View {
                 }
             }.padding()
             
-            HeadMotionScene()
-                .onDisappear(perform: {
-                    headmotionVM.stopMotionUpdate()
-                })
+            HeadMotionSceneView()
             
             Spacer()
             

@@ -8,7 +8,7 @@
 import SwiftUI
 import SceneKit
 
-struct HeadMotionScene: View {
+struct HeadMotionSceneView: View {
     @EnvironmentObject var headmotionVM: HeadmotionViewModel
     
     var body: some View {
@@ -17,12 +17,15 @@ struct HeadMotionScene: View {
             .onAppear(perform: {
                 headmotionVM.startMotionUpdate()
             })
+            .onDisappear(perform: {
+                headmotionVM.stopMotionUpdate()
+            })
     }
 }
 
 struct HeadMotionScene_Previews: PreviewProvider {
     static var previews: some View {
-        HeadMotionScene()
+        HeadMotionSceneView()
             .environmentObject(HeadmotionViewModel())
     }
 }
