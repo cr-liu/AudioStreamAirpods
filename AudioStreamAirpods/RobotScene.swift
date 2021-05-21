@@ -1,29 +1,18 @@
 //
-//  ViewModel.swift
+//  RobotScene.swift
 //  AudioStreamAirpods
 //
-//  Created by liu on 2021/05/17.
+//  Created by liu on 2021/05/21.
 //
 
 import Foundation
-import CoreMotion
-import SwiftUI
 import SceneKit
 
-class HeadmotionViewModel: ObservableObject {
-    @Published var pitch: Float = 0
-    @Published var yaw: Float = 0
-    @Published var roll: Float = 0
-    @Published var imuAvailable: Bool = false
-    
-    private lazy var motionManager = CMHeadphoneMotionManager()
-    private var isUpdating = false
-    
+class RobotScene: ObservableObject {
     var scene: SCNScene?
     var head: SCNNode?
     
     init() {
-        print("init robot scene...")
         guard let url = Bundle.main.url(forResource: "toy_robot_vintage", withExtension: "usdz") else { fatalError() }
         self.scene = try? SCNScene(url: url, options: [.checkConsistency: true])
         
@@ -55,53 +44,5 @@ class HeadmotionViewModel: ObservableObject {
         self.head = robot?.childNode(withName: "vintage_robot_animRig_model_Head_NUL", recursively: true)
         let headPlayer = head?.animationPlayer(forKey: "transform")
         headPlayer?.stop()
-    }
-    
-    func isIMUAvaible() -> Bool {
-        return motionManager.isDeviceMotionAvailable
-    }
-
-    func checkIMU() {
-        imuAvailable = motionManager.isDeviceMotionAvailable
-    }
-    
-    func startMotionUpdate() {
-        checkIMU()
-        guard imuAvailable, !isUpdating else {
-            return
-        }
-        
-//        let queue = OperationQueue()
-//        queue.name = "airpods.headmotion"
-//        queue.qualityOfService = .userInteractive
-//        queue.maxConcurrentOperationCount = 1
-        
-        print("Start Motion Update")
-        isUpdating = true
-        motionManager.startDeviceMotionUpdates(to: .main) { [weak self] (motion, error) in
-            if let error = error {
-                print("\(error)")
-            }
-
-            if let motion = motion {
-                self?.updateMotionData(motion)
-            }
-        }
-    }
-    
-    func stopMotionUpdate() {
-        guard motionManager.isDeviceMotionAvailable,
-              isUpdating else {
-            return
-        }
-        print("Stop Motion Update")
-        isUpdating = false
-        motionManager.stopDeviceMotionUpdates()
-    }
-    
-    func updateMotionData(_ motion: CMDeviceMotion) {
-        let attitude = motion.attitude
-        (self.pitch, self.yaw, self.roll) = (-Float(attitude.pitch), -Float(attitude.yaw), Float(-attitude.roll))
-        head?.eulerAngles = SCNVector3(self.pitch, self.yaw, self.roll)
     }
 }

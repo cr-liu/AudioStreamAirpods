@@ -8,43 +8,44 @@
 import SwiftUI
 import SceneKit
 
-struct HeadMotionSceneView: View {
-    @EnvironmentObject var headmotionVM: HeadmotionViewModel
+struct MotionSceneView: View {
+    @EnvironmentObject var sensorVM: SensorViewModel
     
     var body: some View {
-//        SceneView(scene: headmotionVM.scene, options: [.autoenablesDefaultLighting, .allowsCameraControl])
+//        SceneView(scene: sensorVM.scene, options: [.autoenablesDefaultLighting, .allowsCameraControl])
         SceneKitView()
             .onAppear(perform: {
-                headmotionVM.startMotionUpdate()
+                sensorVM.startMotionUpdate()
             })
             .onDisappear(perform: {
-                headmotionVM.stopMotionUpdate()
+                sensorVM.stopMotionUpdate()
             })
     }
 }
 
-struct HeadMotionScene_Previews: PreviewProvider {
+struct MotionScene_Previews: PreviewProvider {
     static var previews: some View {
-        HeadMotionSceneView()
-            .environmentObject(HeadmotionViewModel())
+        MotionSceneView()
+            .environmentObject(SensorViewModel())
+            .environmentObject(RobotScene())
     }
 }
 
 struct SceneKitView: UIViewRepresentable {
-    @EnvironmentObject var headmotionVM: HeadmotionViewModel
-
+    @EnvironmentObject var sensorVM: SensorViewModel
+    @EnvironmentObject var robot: RobotScene
+    
     typealias UIViewType = SCNView
 
     func makeUIView(context: Context) -> SCNView {
-        print("setup scene...")
-        
         let scnView = SCNView()
         
         // Add camera node
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
         cameraNode.position = SCNVector3(x: 0, y: 30, z: 25)
-        headmotionVM.scene?.rootNode.addChildNode(cameraNode)
+//        headmotionVM.scene?.rootNode.addChildNode(cameraNode)
+        robot.scene?.rootNode.addChildNode(cameraNode)
 
         // Adding light to scene
         let lightNode = SCNNode()
@@ -52,14 +53,16 @@ struct SceneKitView: UIViewRepresentable {
         lightNode.light?.type = .omni
         lightNode.position = SCNVector3(x: 0, y: 45, z: 35)
         lightNode.light?.intensity = 3000
-        headmotionVM.scene?.rootNode.addChildNode(lightNode)
+//        headmotionVM.scene?.rootNode.addChildNode(lightNode)
+        robot.scene?.rootNode.addChildNode(lightNode)
 
         // Creating and adding ambien light to scene
         let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light?.type = .ambient
         ambientLightNode.light?.color = UIColor.darkGray
-        headmotionVM.scene?.rootNode.addChildNode(ambientLightNode)
+//        headmotionVM.scene?.rootNode.addChildNode(ambientLightNode)
+        robot.scene?.rootNode.addChildNode(ambientLightNode)
 
         // Allow user to manipulate camera
         scnView.allowsCameraControl = true
@@ -74,10 +77,14 @@ struct SceneKitView: UIViewRepresentable {
         scnView.cameraControlConfiguration.allowsTranslation = false
 
         // Set scene settings
-        scnView.scene = headmotionVM.scene
+//        scnView.scene = headmotionVM.scene
+        scnView.scene = robot.scene
         
         return scnView
     }
     func updateUIView(_ uiView: SCNView, context: Context) {
+        robot.head?.eulerAngles = SCNVector3(sensorVM.pitch, sensorVM.yaw, sensorVM.roll)
     }
 }
+
+

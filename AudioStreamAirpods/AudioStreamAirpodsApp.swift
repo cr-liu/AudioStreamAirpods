@@ -9,9 +9,14 @@ import SwiftUI
 
 @main
 struct AudioStreamAirpodsApp: App {
+    var sensorVM = SensorViewModel()
+    var robot = RobotScene()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(sensorVM)
+                .environmentObject(robot)
         }
     }
 }

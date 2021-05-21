@@ -13,11 +13,15 @@
 		5A3F88D1264CB03800A19E5E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A3F88D0264CB03800A19E5E /* Preview Assets.xcassets */; };
 		5A3F88D9264CE49200A19E5E /* SensorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88D8264CE49200A19E5E /* SensorView.swift */; };
 		5A3F88DD264D090500A19E5E /* AudioIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88DC264D090500A19E5E /* AudioIO.swift */; };
-		5A3F88DF264E3B9100A19E5E /* HeadMotionSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88DE264E3B9100A19E5E /* HeadMotionSceneView.swift */; };
+		5A3F88DF264E3B9100A19E5E /* MotionSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88DE264E3B9100A19E5E /* MotionSceneView.swift */; };
 		5A3F88E1264E3D7200A19E5E /* toy_robot_vintage.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 5A3F88E0264E3D7200A19E5E /* toy_robot_vintage.usdz */; };
-		5A47AFCB265238E5000BAD9A /* HeadmotionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A47AFCA265238E5000BAD9A /* HeadmotionViewModel.swift */; };
+		5A47AFCB265238E5000BAD9A /* SensorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A47AFCA265238E5000BAD9A /* SensorViewModel.swift */; };
 		5A47AFCE265501D6000BAD9A /* AudioTcpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A47AFCD265501D6000BAD9A /* AudioTcpServer.swift */; };
 		5A47AFD126551167000BAD9A /* NIOTransportServices in Frameworks */ = {isa = PBXBuildFile; productRef = 5A47AFD026551167000BAD9A /* NIOTransportServices */; };
+		5A47AFD32655FFDE000BAD9A /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A47AFD22655FFDE000BAD9A /* MessageView.swift */; };
+		5A47AFD526563F12000BAD9A /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A47AFD426563F12000BAD9A /* SettingView.swift */; };
+		5A47AFD726565420000BAD9A /* CheckBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A47AFD626565420000BAD9A /* CheckBoxView.swift */; };
+		5A47AFDD2657AC5D000BAD9A /* RobotScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A47AFDC2657AC5D000BAD9A /* RobotScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,10 +33,14 @@
 		5A3F88D2264CB03800A19E5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5A3F88D8264CE49200A19E5E /* SensorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorView.swift; sourceTree = "<group>"; };
 		5A3F88DC264D090500A19E5E /* AudioIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioIO.swift; sourceTree = "<group>"; };
-		5A3F88DE264E3B9100A19E5E /* HeadMotionSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadMotionSceneView.swift; sourceTree = "<group>"; };
+		5A3F88DE264E3B9100A19E5E /* MotionSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSceneView.swift; sourceTree = "<group>"; };
 		5A3F88E0264E3D7200A19E5E /* toy_robot_vintage.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = toy_robot_vintage.usdz; sourceTree = "<group>"; };
-		5A47AFCA265238E5000BAD9A /* HeadmotionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadmotionViewModel.swift; sourceTree = "<group>"; };
+		5A47AFCA265238E5000BAD9A /* SensorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorViewModel.swift; sourceTree = "<group>"; };
 		5A47AFCD265501D6000BAD9A /* AudioTcpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTcpServer.swift; sourceTree = "<group>"; };
+		5A47AFD22655FFDE000BAD9A /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
+		5A47AFD426563F12000BAD9A /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
+		5A47AFD626565420000BAD9A /* CheckBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxView.swift; sourceTree = "<group>"; };
+		5A47AFDC2657AC5D000BAD9A /* RobotScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,7 +76,7 @@
 			children = (
 				5A47AFCD265501D6000BAD9A /* AudioTcpServer.swift */,
 				5A3F88C9264CB03500A19E5E /* AudioStreamAirpodsApp.swift */,
-				5A47AFCA265238E5000BAD9A /* HeadmotionViewModel.swift */,
+				5A47AFCA265238E5000BAD9A /* SensorViewModel.swift */,
 				5A3F88DC264D090500A19E5E /* AudioIO.swift */,
 				5A3F88CD264CB03800A19E5E /* Assets.xcassets */,
 				5A47AFCC265501A0000BAD9A /* views */,
@@ -90,8 +98,12 @@
 			isa = PBXGroup;
 			children = (
 				5A3F88CB264CB03500A19E5E /* ContentView.swift */,
+				5A47AFD626565420000BAD9A /* CheckBoxView.swift */,
+				5A47AFD426563F12000BAD9A /* SettingView.swift */,
 				5A3F88D8264CE49200A19E5E /* SensorView.swift */,
-				5A3F88DE264E3B9100A19E5E /* HeadMotionSceneView.swift */,
+				5A47AFD22655FFDE000BAD9A /* MessageView.swift */,
+				5A3F88DE264E3B9100A19E5E /* MotionSceneView.swift */,
+				5A47AFDC2657AC5D000BAD9A /* RobotScene.swift */,
 				5A3F88E0264E3D7200A19E5E /* toy_robot_vintage.usdz */,
 			);
 			name = views;
@@ -174,12 +186,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				5A3F88CC264CB03500A19E5E /* ContentView.swift in Sources */,
-				5A3F88DF264E3B9100A19E5E /* HeadMotionSceneView.swift in Sources */,
+				5A47AFD726565420000BAD9A /* CheckBoxView.swift in Sources */,
+				5A3F88DF264E3B9100A19E5E /* MotionSceneView.swift in Sources */,
 				5A3F88CA264CB03500A19E5E /* AudioStreamAirpodsApp.swift in Sources */,
+				5A47AFD526563F12000BAD9A /* SettingView.swift in Sources */,
 				5A47AFCE265501D6000BAD9A /* AudioTcpServer.swift in Sources */,
+				5A47AFD32655FFDE000BAD9A /* MessageView.swift in Sources */,
 				5A3F88D9264CE49200A19E5E /* SensorView.swift in Sources */,
 				5A3F88DD264D090500A19E5E /* AudioIO.swift in Sources */,
-				5A47AFCB265238E5000BAD9A /* HeadmotionViewModel.swift in Sources */,
+				5A47AFCB265238E5000BAD9A /* SensorViewModel.swift in Sources */,
+				5A47AFDD2657AC5D000BAD9A /* RobotScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

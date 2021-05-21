@@ -9,58 +9,68 @@ import SwiftUI
 
 struct SensorView: View {
     @ObservedObject var audioIO: AudioIO
-    @EnvironmentObject var headmotionVM: HeadmotionViewModel
+    @EnvironmentObject var sensorVM: SensorViewModel
+    @State private var showingSettingView: Bool = false
     
     var imuAvailable: Bool {
-        headmotionVM.imuAvailable
+        sensorVM.imuAvailable
     }
     
     var body: some View {
         VStack {
-            HStack {
+            HStack(alignment: .top) {
                 Image(systemName: "airpodspro")
                     .resizable()
                     .scaledToFit()
                     .frame(height: 20)
                     .foregroundColor(imuAvailable ? .accentColor : .gray)
-                    
-                Spacer()
                 
-                Button(action: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Action@*/{}/*@END_MENU_TOKEN@*/) {
-                    Image(systemName: "ellipsis")
+                MotionSceneView()
+                    .offset(y: -300.0)
+                    .padding(.bottom, -300)
+                
+                Button(action: {
+                    self.showingSettingView.toggle()
+                }) {
+                    Image(systemName: "slider.horizontal.3")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 35)
+                        .frame(width: 30)
                         .foregroundColor(.gray)
+                }.sheet(isPresented: $showingSettingView) {
+                    SettingView()
+                        .environmentObject(sensorVM)
                 }
             }.padding()
             
-            HeadMotionSceneView()
+            MessageView().padding()
             
-            Spacer()
-            
-            if audioIO.recording == false {
-                Button(action: {print("Start recording")}) {
-                    Image(systemName: "circle.fill")
+            HStack {
+                Button(action: {
+                    sensorVM.isPlaying.toggle()
+                }) {
+                    Image(systemName: sensorVM.isPlaying ? "speaker.zzz" : "speaker.wave.2")
                         .resizable()
-//                        .aspectRatio(contentMode: .fill)
                         .scaledToFit()
-                        .frame(width: 70)
-                        .clipped()
-                        .foregroundColor(.red)
-                        .padding(.bottom, 40)
+                        .frame(width: 50, height: 50)
+                        .foregroundColor(.gray)
                 }
-            } else {
-                Button(action: {print("Stop recording)")}) {
-                    Image(systemName: "stop.fill")
+                
+                Spacer()
+                CheckBoxView(checked: $sensorVM.isAntitarget)
+                Text("Antitarget")
+                Spacer()
+                
+                Button(action: {
+                    sensorVM.isRecording.toggle()
+                }) {
+                    Image(systemName: sensorVM.isRecording ? "mic.slash" : "mic")
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 100, height: 100)
-                        .clipped()
+                        .scaledToFit()
+                        .frame(width: 50, height: 50)
                         .foregroundColor(.red)
-                        .padding(.bottom, 40)
                 }
-            }
+            }.padding(.bottom, 40).padding(.leading, 50).padding(.trailing, 50)
         }
         
     }
@@ -69,6 +79,7 @@ struct SensorView: View {
 struct SensorView_Previews: PreviewProvider {
     static var previews: some View {
         SensorView(audioIO: AudioIO())
-            .environmentObject(HeadmotionViewModel())
+            .environmentObject(SensorViewModel())
+            .environmentObject(RobotScene())
     }
 }
