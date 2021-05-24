@@ -14,11 +14,8 @@ class SensorViewModel: ObservableObject {
     @Published var roll: Float = 0
     @Published var imuAvailable: Bool = false
     @Published var messages: [String] = []
-    @Published var isPlaying : Bool = false
-    @Published var isRecording: Bool = false
-    @Published var isAntitarget: Bool = false
 
-    
+
     private lazy var motionManager = CMHeadphoneMotionManager()
     private var isUpdating = false
     
@@ -70,10 +67,37 @@ class SensorViewModel: ObservableObject {
     }
     
     func addMessage(_ msg: String) {
-        self.messages.append(msg)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm:ss.SSS"
+        self.messages.append(msg + " -- " + dateFormatter.string(from: Date()))
     }
     
     @Published var repeatMic: Bool = false
+    @Published var isPlaying : Bool = false
+    @Published var isRecording: Bool = false
+    @Published var isAntitarget: Bool = false
+    @Published var speakerType: String = ""
+    private lazy var audioIO = AudioIO()
+
+    func startAudioSess() {
+        guard let _ = try? audioIO.startRecording() else {
+            addMessage("Failed start audio session!")
+            return
+        }
+        speakerType = audioIO.outputDeviceType()
+        addMessage("Audio session started.")
+    }
+    
+    func pauseAudioSess() {
+        audioIO.pauseRecording()
+        addMessage("Audio session paused.")
+    }
+    
+    func stopAudioSess() {
+        audioIO.stopRecording()
+        addMessage("Audio session stopped.")
+    }
+    
     @Published var connectHost: String = "192.168.1.10"
     @Published var connectPort: Int = 12345
     @Published var isConnected: Bool = false

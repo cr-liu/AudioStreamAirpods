@@ -12,14 +12,19 @@ struct SettingView: View {
     
     var body: some View {
         VStack(alignment: .trailing) {
-            Button(action: {
-                sensorVM.repeatMic.toggle()
-            }) {
-                Image(systemName: "memories")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 50, height: 50)
-                    .foregroundColor(sensorVM.repeatMic ? .accentColor : .secondary)
+            HStack {
+                Text(sensorVM.speakerType)
+                    .foregroundColor(.secondary)
+                Button(action: {
+                    sensorVM.repeatMic ? sensorVM.stopAudioSess() : sensorVM.startAudioSess()
+                    sensorVM.repeatMic.toggle()
+                }) {
+                    Image(systemName: "memories")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 50, height: 50)
+                        .foregroundColor(sensorVM.repeatMic ? .accentColor : .secondary)
+                }
             }
             
             HStack(alignment: .bottom) {

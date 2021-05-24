@@ -13,8 +13,9 @@ struct MessageView: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading) {
-                ForEach(sensorVM.messages, id: \.self) { text in // show received results
+                ForEach(sensorVM.messages, id: \.self) { text in
                     Text(text)
+                        .id(UUID())
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
         }
