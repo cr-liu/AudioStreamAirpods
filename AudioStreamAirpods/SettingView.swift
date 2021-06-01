@@ -16,16 +16,15 @@ struct SettingView: View {
                 Text(sensorVM.speakerType)
                     .foregroundColor(.secondary)
                 Button(action: {
-                    sensorVM.repeatMic ? sensorVM.stopAudioSess() : sensorVM.startAudioSess()
-                    sensorVM.repeatMic.toggle()
+                    sensorVM.playEcho()
                 }) {
                     Image(systemName: "memories")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 50, height: 50)
-                        .foregroundColor(sensorVM.repeatMic ? .accentColor : .secondary)
+                        .foregroundColor(sensorVM.isPlayingEcho ? .accentColor : .secondary)
                 }
-            }
+            }.padding(.bottom, 40)
             
             HStack(alignment: .bottom) {
                 VStack(alignment: .leading) {
@@ -34,6 +33,9 @@ struct SettingView: View {
                     TextField("192.168.1.0", text: $sensorVM.connectHost)
                         .foregroundColor(Color(UIColor.darkGray))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .onChange(of: sensorVM.connectHost, perform: { value in
+                            sensorVM.connectHostChanged(to: value)
+                        })
                 }
                 VStack(alignment: .leading) {
                     Text("Port: ")
@@ -41,17 +43,11 @@ struct SettingView: View {
                     TextField("12345", value: $sensorVM.connectPort, formatter: NumberFormatter())
                         .foregroundColor(Color(UIColor.darkGray))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .onChange(of: sensorVM.connectPort, perform: { value in
+                            sensorVM.connectPortChanged(to: value)
+                        })
                 }
-                Button(action: {
-                    sensorVM.isConnected.toggle()
-                }) {
-                    Image(systemName: "link")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 50, height: 50)
-                        .foregroundColor(sensorVM.isConnected ? .accentColor : .secondary)
-                }
-            }
+            }.padding(.bottom, 30)
         
             HStack(alignment: .bottom) {
                 VStack(alignment: .leading) {
@@ -60,6 +56,7 @@ struct SettingView: View {
                     TextField("LocalAudioHost", text: $sensorVM.listenHost)
                         .foregroundColor(Color(UIColor.darkGray))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .disabled(true)
                 }
                 VStack(alignment: .leading) {
                     Text("Listen on: ")
@@ -67,16 +64,11 @@ struct SettingView: View {
                     TextField("12345", value: $sensorVM.listenPort, formatter: NumberFormatter())
                         .foregroundColor(Color(UIColor.darkGray))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .onChange(of: sensorVM.listenPort, perform: { value in
+                            sensorVM.listenPortChanged(to: value)
+                        })
                 }
-                Button(action: {
-                    sensorVM.serverStarted.toggle()
-                }) {
-                    Image(systemName: "externaldrive.badge.wifi")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 50, height: 50)
-                        .foregroundColor(sensorVM.serverStarted ? .accentColor : .secondary)
-                }
+
             }
         }.padding()
     }

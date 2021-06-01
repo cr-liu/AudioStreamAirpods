@@ -8,13 +8,8 @@
 import SwiftUI
 
 struct SensorView: View {
-    @ObservedObject var audioIO: AudioIO
     @EnvironmentObject var sensorVM: SensorViewModel
     @State private var showingSettingView: Bool = false
-    
-    var imuAvailable: Bool {
-        sensorVM.imuAvailable
-    }
     
     var body: some View {
         VStack {
@@ -23,7 +18,10 @@ struct SensorView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(height: 20)
-                    .foregroundColor(imuAvailable ? .accentColor : .gray)
+                    .foregroundColor(sensorVM.imuAvailable ? .accentColor : .gray)
+                    .onTapGesture {
+                        sensorVM.isUpdatingMotion ? sensorVM.stopMotionUpdate() : sensorVM.startMotionUpdate()
+                    }
                 
                 MotionSceneView()
                     .offset(y: -300.0)
@@ -45,7 +43,37 @@ struct SensorView: View {
             
             MessageView().padding()
             
+            HStack{
+                CheckBoxView(checked: $sensorVM.isAntitarget)
+                Text("Antitarget")
+            }.onTapGesture {
+                sensorVM.makeAntitarget()
+            }
+            
             HStack {
+                Image(systemName: "externaldrive.badge.wifi")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 60, height: 60)
+                    .foregroundColor(sensorVM.serverStarted ?
+                                        .accentColor : .secondary)
+                    .onLongPressGesture {
+                        sensorVM.serverStarted ?
+                            sensorVM.stopTcpServer() :
+                            sensorVM.startTcpServer()
+                    }
+                Spacer()
+                Image(systemName: "link")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 45, height: 45)
+                    .foregroundColor(sensorVM.isConnected ? .accentColor : .secondary)
+                    .onLongPressGesture {
+                        sensorVM.isConnected ?
+                            sensorVM.closeConnection() :
+                            sensorVM.startConnection()
+                    }
+                Spacer()
                 Button(action: {
                     sensorVM.isPlaying.toggle()
                 }) {
@@ -55,14 +83,9 @@ struct SensorView: View {
                         .frame(width: 50, height: 50)
                         .foregroundColor(.gray)
                 }
-                
                 Spacer()
-                CheckBoxView(checked: $sensorVM.isAntitarget)
-                Text("Antitarget")
-                Spacer()
-                
                 Button(action: {
-                    sensorVM.isRecording.toggle()
+                    sensorVM.isRecording ? sensorVM.pauseAudioSess() : sensorVM.startAudioSess()
                 }) {
                     Image(systemName: sensorVM.isRecording ? "mic.slash" : "mic")
                         .resizable()
@@ -78,7 +101,7 @@ struct SensorView: View {
 
 struct SensorView_Previews: PreviewProvider {
     static var previews: some View {
-        SensorView(audioIO: AudioIO())
+        SensorView()
             .environmentObject(SensorViewModel())
             .environmentObject(RobotScene())
     }
