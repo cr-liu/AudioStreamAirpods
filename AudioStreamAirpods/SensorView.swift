@@ -20,7 +20,7 @@ struct SensorView: View {
                     .frame(height: 20)
                     .foregroundColor(sensorVM.imuAvailable ? .accentColor : .gray)
                     .onTapGesture {
-                        sensorVM.isUpdatingMotion ? sensorVM.stopMotionUpdate() : sensorVM.startMotionUpdate()
+                        sensorVM.isUpdatingHeadMotion ? sensorVM.stopMotionUpdate() : sensorVM.startHeadMotionUpdate()
                     }
                 
                 MotionSceneView()

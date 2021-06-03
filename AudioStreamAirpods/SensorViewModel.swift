@@ -10,6 +10,21 @@ import CoreMotion
 import AVFoundation
 
 class SensorViewModel: ObservableObject {
+    init() {
+        registerForNotifications()
+        if let ifAddress = getIPAddress() {
+            listenHost = ifAddress
+            tcpServer.host = ifAddress
+        }
+        audioIO.tcpServer = tcpServer
+        collectMessage()
+    }
+    
+    deinit {
+        if serverStarted { stopTcpServer() }
+        if isRecording { stopAudioSess() }
+    }
+    
     func registerForNotifications() {
         NotificationCenter.default.addObserver(
             forName: AVAudioSession.routeChangeNotification,
@@ -103,57 +118,70 @@ class SensorViewModel: ObservableObject {
         audioIO.playEcho(isPlayingEcho)
     }
     
-    @Published var pitch: Float = 0
-    @Published var yaw: Float = 0
-    @Published var roll: Float = 0
+    @Published var headPitch: Float = 0
+    @Published var headYaw: Float = 0
+    @Published var headRoll: Float = 0
     @Published var imuAvailable: Bool = false
-    @Published var isUpdatingMotion = false
-
-    private var motionManager = CMHeadphoneMotionManager()
+    @Published var isUpdatingHeadMotion = false
+    private var headMotionManager = CMHeadphoneMotionManager()
+    private let motionUpdateQueue = DispatchQueue.global(qos: .default)
 
     func checkIMU() {
         speakerType = audioIO.outputDeviceType()
-        imuAvailable = motionManager.isDeviceMotionAvailable && speakerType == "Bluetooth A2DP"
+        imuAvailable = headMotionManager.isDeviceMotionAvailable && speakerType == "Bluetooth A2DP"
     }
     
-    func startMotionUpdate() {
+    func startHeadMotionUpdate() {
         checkIMU()
-        guard imuAvailable, !isUpdatingMotion else {
+        guard imuAvailable, !isUpdatingHeadMotion else {
             return
         }
-        
-//        let queue = OperationQueue()
-//        queue.name = "airpods.headmotion"
-//        queue.qualityOfService = .userInteractive
-//        queue.maxConcurrentOperationCount = 1
 
         addMessage("Start Motion Update")
-        isUpdatingMotion = true
-        motionManager.startDeviceMotionUpdates(to: .main) { [weak self] (motion, error) in
+        isUpdatingHeadMotion = true
+        headMotionManager.startDeviceMotionUpdates(to: motionUpdateQueue) { [weak self] (motion, error) in
+            guard let weakself = self else {
+                return
+            }
             if let error = error {
-                self?.addMessage("\(error)")
+                DispatchQueue.main.async {
+                    weakself.addMessage("\(error)")
+                }
             }
 
             if let motion = motion {
-                self?.updateMotionData(motion)
+                weakself.updateMotionData(motion)
             }
         }
     }
     
     func stopMotionUpdate() {
-        guard motionManager.isDeviceMotionAvailable,
-              isUpdatingMotion else {
+        guard headMotionManager.isDeviceMotionAvailable,
+              isUpdatingHeadMotion else {
             return
         }
         addMessage("Stop Motion Update")
-        isUpdatingMotion = false
-        motionManager.stopDeviceMotionUpdates()
+        isUpdatingHeadMotion = false
+        headMotionManager.stopDeviceMotionUpdates()
     }
     
     func updateMotionData(_ motion: CMDeviceMotion) {
         let attitude = motion.attitude
-        (self.pitch, self.yaw, self.roll) = (-Float(attitude.pitch), Float(attitude.yaw), Float(-attitude.roll))
+        DispatchQueue.main.async {
+            (self.headPitch, self.headYaw, self.headRoll) = (-Float(attitude.pitch), Float(attitude.yaw), Float(-attitude.roll))
+        }
     }
+    
+    @Published var iphonePitch: Float = 0
+    @Published var iphoneYaw: Float = 0
+    @Published var iphoneRoll: Float = 0
+    @Published var iphoneAccX: Float = 0
+    @Published var iphoneAccY: Float = 0
+    @Published var iphoneAccZ: Float = 0
+    private var isUpdatingMotion: Bool = false
+    private var motionManager = CMMotionManager()
+    
+    
 
     @Published var listenHost: String = "LocalHost"
     @Published var listenPort: Int = 12345
@@ -169,7 +197,7 @@ class SensorViewModel: ObservableObject {
             while ptr != nil {
                 defer { ptr = ptr?.pointee.ifa_next }
 
-                guard let interface = ptr?.pointee else { return "" }
+                guard let interface = ptr?.pointee else { return nil }
                 let addrFamily = interface.ifa_addr.pointee.sa_family
                 if addrFamily == UInt8(AF_INET) || addrFamily == UInt8(AF_INET6) {
 
@@ -241,19 +269,6 @@ class SensorViewModel: ObservableObject {
         isConnected = false
     }
     
-    init() {
-        registerForNotifications()
-        if let ifAddress = getIPAddress() {
-            listenHost = ifAddress
-            tcpServer.host = ifAddress
-        }
-        audioIO.tcpServer = tcpServer
-        collectMessage()
-    }
-    
-    deinit {
-        if serverStarted { stopTcpServer() }
-        if isRecording { stopAudioSess() }
-    }
+
 }
 

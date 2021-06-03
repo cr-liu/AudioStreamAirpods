@@ -15,7 +15,7 @@ struct MotionSceneView: View {
 //        SceneView(scene: sensorVM.scene, options: [.autoenablesDefaultLighting, .allowsCameraControl])
         SceneKitView()
             .onAppear(perform: {
-                sensorVM.startMotionUpdate()
+                sensorVM.startHeadMotionUpdate()
             })
             .onDisappear(perform: {
                 sensorVM.stopMotionUpdate()
@@ -83,7 +83,7 @@ struct SceneKitView: UIViewRepresentable {
         return scnView
     }
     func updateUIView(_ uiView: SCNView, context: Context) {
-        robot.head?.eulerAngles = SCNVector3(sensorVM.pitch, sensorVM.yaw, sensorVM.roll)
+        robot.head?.eulerAngles = SCNVector3(sensorVM.headPitch, sensorVM.headYaw, sensorVM.headRoll)
     }
 }
 

@@ -11,7 +11,7 @@ import NIO
 class AudioTcpClient {
     var messages: [String] = []
     var isConnected: Bool = false
-    var h16D320Handler = H16D320ClientHandler()
+    var h16D320Handler = H16D320Ch1ClientHandler()
     var host: String = "192.168.1.10"
     var port: Int = 12345
     private let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
@@ -54,15 +54,12 @@ class AudioTcpClient {
         isConnected = false
         messages.append("Disconnected from \(host):\(port).")
     }
-    
-
 }
 
-class H16D320ClientHandler: ChannelInboundHandler {
+class H16D320Ch1ClientHandler: H16D320Ch1, ChannelInboundHandler {
     typealias InboundIn = ByteBuffer
     typealias OutboundOut = ByteBuffer
     private var numBytes = 0
-    private var soundData = [Int16](repeating: 0, count: 160)
     
     func channelActive(context: ChannelHandlerContext) {
         let message = "AudioStreamAirpods"
@@ -75,31 +72,6 @@ class H16D320ClientHandler: ChannelInboundHandler {
         var buffer = unwrapInboundIn(data)
         let ptr = buffer.withUnsafeMutableReadableBytes{ $0 }.baseAddress!
         readH16D320Ch1(from: ptr)
-//        buffer.moveReaderIndex(to: 336)
-        
-//        if let received = buffer.readString(length: readableBytes) {
-//            print(readableBytes)
-//        }
-    }
-    
-    func readH16D320Ch1(from ptr: UnsafeMutableRawPointer) {
-        var unixTime = UnsafeMutablePointer<Int32>(ptr.assumingMemoryBound(to: Int32.self)).pointee
-        var movingPtr = ptr + MemoryLayout<Int32>.size
-        var ms = UnsafeMutablePointer<Int16>(movingPtr.assumingMemoryBound(to: Int16.self)).pointee
-        movingPtr = movingPtr + MemoryLayout<Int16>.size
-        var pktID = UnsafeMutablePointer<Int32>(movingPtr.assumingMemoryBound(to: Int32.self)).pointee
-        movingPtr = movingPtr + MemoryLayout<Int32>.size
-        var humanID = UnsafeMutablePointer<Int32>(movingPtr.assumingMemoryBound(to: Int32.self)).pointee
-        movingPtr = movingPtr + MemoryLayout<Int32>.size
-        var isAntitarget = UnsafeMutablePointer<Int8>(movingPtr.assumingMemoryBound(to: Int8.self)).pointee
-        movingPtr = movingPtr + MemoryLayout<Int8>.size
-        var speechActivity = UnsafeMutablePointer<Int8>(ptr.assumingMemoryBound(to: Int8.self)).pointee
-        var dataPtr = UnsafeMutablePointer<Int16>((movingPtr + MemoryLayout<Int8>.size).assumingMemoryBound(to: Int16.self))
-        for index in 0 ..< 160 {
-            soundData[index] = dataPtr.pointee
-            dataPtr = dataPtr + 1
-        }
-//        print(isAntitarget)
     }
     
     func errorCaught(context: ChannelHandlerContext, error: Error) {

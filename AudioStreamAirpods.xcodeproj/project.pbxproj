@@ -21,8 +21,10 @@
 		5A47AFD526563F12000BAD9A /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A47AFD426563F12000BAD9A /* SettingView.swift */; };
 		5A47AFD726565420000BAD9A /* CheckBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A47AFD626565420000BAD9A /* CheckBoxView.swift */; };
 		5A47AFDD2657AC5D000BAD9A /* RobotScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A47AFDC2657AC5D000BAD9A /* RobotScene.swift */; };
+		5A70082E2668D5CB007D3DCB /* iphone11.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 5A70082D2668D5CB007D3DCB /* iphone11.usdz */; };
 		5ADC885F2661B414002C4F84 /* AudioTcpClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADC885E2661B414002C4F84 /* AudioTcpClient.swift */; };
 		5AE523ED2664C10700B914A2 /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 5AE523EC2664C10700B914A2 /* NIO */; };
+		5AE523EF26661F1600B914A2 /* H16D320Ch1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE523EE26661F1600B914A2 /* H16D320Ch1.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,7 +44,9 @@
 		5A47AFD426563F12000BAD9A /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		5A47AFD626565420000BAD9A /* CheckBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxView.swift; sourceTree = "<group>"; };
 		5A47AFDC2657AC5D000BAD9A /* RobotScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotScene.swift; sourceTree = "<group>"; };
+		5A70082D2668D5CB007D3DCB /* iphone11.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = iphone11.usdz; sourceTree = "<group>"; };
 		5ADC885E2661B414002C4F84 /* AudioTcpClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTcpClient.swift; sourceTree = "<group>"; };
+		5AE523EE26661F1600B914A2 /* H16D320Ch1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = H16D320Ch1.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +82,7 @@
 			children = (
 				5A47AFCD265501D6000BAD9A /* AudioTcpServer.swift */,
 				5ADC885E2661B414002C4F84 /* AudioTcpClient.swift */,
+				5AE523EE26661F1600B914A2 /* H16D320Ch1.swift */,
 				5A3F88C9264CB03500A19E5E /* AudioStreamAirpodsApp.swift */,
 				5A47AFCA265238E5000BAD9A /* SensorViewModel.swift */,
 				5A3F88DC264D090500A19E5E /* AudioIO.swift */,
@@ -107,6 +112,7 @@
 				5A47AFD22655FFDE000BAD9A /* MessageView.swift */,
 				5A3F88DE264E3B9100A19E5E /* MotionSceneView.swift */,
 				5A47AFDC2657AC5D000BAD9A /* RobotScene.swift */,
+				5A70082D2668D5CB007D3DCB /* iphone11.usdz */,
 				5A3F88E0264E3D7200A19E5E /* toy_robot_vintage.usdz */,
 			);
 			name = views;
@@ -177,6 +183,7 @@
 			files = (
 				5A3F88D1264CB03800A19E5E /* Preview Assets.xcassets in Resources */,
 				5A3F88CE264CB03800A19E5E /* Assets.xcassets in Resources */,
+				5A70082E2668D5CB007D3DCB /* iphone11.usdz in Resources */,
 				5A3F88E1264E3D7200A19E5E /* toy_robot_vintage.usdz in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -191,6 +198,7 @@
 				5A3F88CC264CB03500A19E5E /* ContentView.swift in Sources */,
 				5A47AFD726565420000BAD9A /* CheckBoxView.swift in Sources */,
 				5A3F88DF264E3B9100A19E5E /* MotionSceneView.swift in Sources */,
+				5AE523EF26661F1600B914A2 /* H16D320Ch1.swift in Sources */,
 				5A3F88CA264CB03500A19E5E /* AudioStreamAirpodsApp.swift in Sources */,
 				5A47AFD526563F12000BAD9A /* SettingView.swift in Sources */,
 				5A47AFCE265501D6000BAD9A /* AudioTcpServer.swift in Sources */,
