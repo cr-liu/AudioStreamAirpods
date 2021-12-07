@@ -11,6 +11,7 @@ class H16D320Ch1 {
     var soundData = ContiguousArray<Int16>(repeating: 0, count: 160)
     var skipHeader: Bool = true
     var sktHeader: H16D320Ch1Header?
+    let headerLen = 16
     
     struct H16D320Ch1Header {
         var unixTime: Int32
@@ -25,7 +26,7 @@ class H16D320Ch1 {
     func readH16D320Ch1(from ptr: UnsafeMutableRawPointer) {
         var movingPtr = ptr
         if skipHeader {
-            movingPtr += 16
+            movingPtr += headerLen
         } else {
             if sktHeader == nil {
                 sktHeader = H16D320Ch1Header(unixTime: 0, ms: 0, pktID: 0, humanID: 0, isAntitarget: -1, speechActivity: 0)

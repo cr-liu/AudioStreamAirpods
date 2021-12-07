@@ -23,7 +23,31 @@ struct SettingView: View {
                         .scaledToFit()
                         .frame(width: 50, height: 50)
                         .foregroundColor(sensorVM.isPlayingEcho ? .accentColor : .secondary)
+                }.padding(.trailing)
+                Button(action: {
+                    sensorVM.channelNumberChanged()
+                }) {
+                    Image(systemName: sensorVM.isStereo ? "beats.headphones" : "airpod.right")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 42, height: 42)
+                        .foregroundColor(.teal)
                 }
+            }.padding(.bottom, 40)
+              
+            HStack() {
+                Text("Player delay: ")
+                    .foregroundColor(.secondary)
+                TextField("1", value: $sensorVM.playerDelay, formatter: NumberFormatter())
+                    .frame(width: 35)
+                    .foregroundColor(Color(UIColor.darkGray))
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .onChange(of: sensorVM.playerDelay, perform: { value in
+                        sensorVM.playerDelayChanged(to: value)
+                    })
+                Text(" packets (10ms)")
+                    .foregroundColor(.secondary)
+                
             }.padding(.bottom, 40)
             
             HStack(alignment: .bottom) {

@@ -75,13 +75,13 @@ struct SensorView: View {
                     }
                 Spacer()
                 Button(action: {
-                    sensorVM.isPlaying.toggle()
+                    sensorVM.playTcpSource()
                 }) {
                     Image(systemName: sensorVM.isPlaying ? "speaker.zzz" : "speaker.wave.2")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 50, height: 50)
-                        .foregroundColor(.gray)
+                        .foregroundColor(sensorVM.isPlaying ? .mint : .gray)
                 }
                 Spacer()
                 Button(action: {

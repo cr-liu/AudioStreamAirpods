@@ -10,13 +10,84 @@ import CoreMotion
 import AVFoundation
 
 class SensorViewModel: ObservableObject {
+    @Published var messages: [String] = []
+    
+    var maxDelay = 10
+    @Published var playerDelay: Int = 1
+    @Published var isPlayingEcho: Bool = false
+    @Published var isPlaying : Bool = false
+    @Published var isRecording: Bool = false
+    @Published var speakerType: String = ""
+    var audioIO: AudioIO
+    
+    @Published var headPitch: Float = 0
+    @Published var headYaw: Float = 0
+    @Published var headRoll: Float = 0
+    @Published var imuAvailable: Bool = false
+    @Published var isUpdatingHeadMotion = false
+    private var headMotionManager: CMHeadphoneMotionManager
+    // private let motionUpdateQueue = DispatchQueue.global(qos: .default)
+    
+//    @Published var iphonePitch: Float = 0
+//    @Published var iphoneYaw: Float = 0
+//    @Published var iphoneRoll: Float = 0
+//    @Published var iphoneAccX: Float = 0
+//    @Published var iphoneAccY: Float = 0
+//    @Published var iphoneAccZ: Float = 0
+//    private var isUpdatingMotion: Bool = false
+//    private var motionManager = CMMotionManager()
+    
+    @Published var listenHost: String = "LocalHost"
+    @Published var listenPort: Int = 12345
+    @Published var serverStarted: Bool = false
+    @Published var isAntitarget: Bool = false
+    var tcpServer: AudioTcpServer
+    var imuData4Server: ContiguousArray<Float32>
+    //    var phoneRoll: Float32 = -10000
+    //    var phonePitch: Float32 = -10000
+    //    var phoneYaw: Float32 = -10000
+    //    var phoneAccX: Float32 = -10000
+    //    var phoneAccY: Float32 = -10000
+    //    var phoneAccZ: Float32 = -10000
+    //    var phoneCompass: Float32 = -10000
+    //    var phoneGpsN: Float32 = -10000
+    //    var phoneGpsE: Float32 = -10000
+    //    var calib: Float32 = -10000
+    //    var headRoll: Float32 = -10000
+    //    var headPitch: Float32 = -10000
+    //    var headYaw: Float32 = -10000
+    //    var headAccX: Float32 = -10000
+    //    var headAccY: Float32 = -10000
+    //    var headAccZ: Float32 = -10000
+    
+    @Published var connectHost: String = "192.168.1.10"
+    @Published var connectPort: Int = 12345
+    @Published var isConnected: Bool = false
+    @Published var isStereo: Bool = true
+    var tcpClient: AudioTcpClient
+    var tcpClientBuffer: RingBuffer<Int16>
+    
     init() {
+        audioIO = AudioIO()
+        
+        imuData4Server = ContiguousArray<Float32>(repeating: -10000, count: 16)
+        let imuPtr = imuData4Server.withUnsafeBytes{ $0 }.baseAddress!
+        tcpServer = AudioTcpServer(withImu: imuPtr)
+        audioIO.tcpServer = tcpServer
+        
+        tcpClient = AudioTcpClient()
+        audioIO.tcpClient = tcpClient
+        tcpClientBuffer = RingBuffer<Int16>(repeating: 0, count: 160 * maxDelay)
+        audioIO.tcpSourceNodeBuffer = tcpClientBuffer
+        tcpClient.setBuffer(tcpClientBuffer)
+        
+        headMotionManager = CMHeadphoneMotionManager()
+        
         registerForNotifications()
         if let ifAddress = getIPAddress() {
             listenHost = ifAddress
             tcpServer.host = ifAddress
         }
-        audioIO.tcpServer = tcpServer
         collectMessage()
     }
     
@@ -39,8 +110,8 @@ class SensorViewModel: ObservableObject {
         }
     }
     
-    @Published var messages: [String] = []
-    
+
+    // Message
     func addMessage(_ msg: String) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm:ss.SSS"
@@ -66,6 +137,12 @@ class SensorViewModel: ObservableObject {
             }
             tcpServer.h16D320Ch1Handler.messages = []
         }
+        if !tcpServer.h80D320Ch1Handler.messages.isEmpty {
+            for msg in tcpServer.h80D320Ch1Handler.messages {
+                addMessage(msg)
+            }
+            tcpServer.h80D320Ch1Handler.messages = []
+        }
         if listenHost == "LocalHost" {
             if let ifAddress = getIPAddress() {
                 listenHost = ifAddress
@@ -83,14 +160,13 @@ class SensorViewModel: ObservableObject {
 //        print("test...")
     }
     
-    @Published var isPlayingEcho: Bool = false
-    @Published var isPlaying : Bool = false
-    @Published var isRecording: Bool = false
-    @Published var speakerType: String = ""
-    var audioIO = AudioIO()
-
+    
+    // Audio input/output
     func startAudioSess() {
-        guard let _ = try? audioIO.startRecording() else {
+        if isRecording {
+            return
+        }
+        guard let _ = try? audioIO.startAudioSess() else {
             addMessage("Failed start audio session!")
             return
         }
@@ -99,7 +175,7 @@ class SensorViewModel: ObservableObject {
     }
     
     func pauseAudioSess() {
-        audioIO.pauseRecording()
+        audioIO.pauseAudioSess()
         isRecording = false
         addMessage("Audio session paused.")
     }
@@ -108,9 +184,14 @@ class SensorViewModel: ObservableObject {
         if audioIO.isStopped() {
             return
         }
-        audioIO.stopRecording()
+        audioIO.stopAudioSess()
         isRecording = false
         addMessage("Audio session stopped.")
+    }
+    
+    func playTcpSource() {
+        isPlaying.toggle()
+        audioIO.playTcpSource(isPlaying)
     }
     
     func playEcho() {
@@ -118,14 +199,16 @@ class SensorViewModel: ObservableObject {
         audioIO.playEcho(isPlayingEcho)
     }
     
-    @Published var headPitch: Float = 0
-    @Published var headYaw: Float = 0
-    @Published var headRoll: Float = 0
-    @Published var imuAvailable: Bool = false
-    @Published var isUpdatingHeadMotion = false
-    private var headMotionManager = CMHeadphoneMotionManager()
-    private let motionUpdateQueue = DispatchQueue.global(qos: .default)
+    func playerDelayChanged(to newDelay: Int) {
+        if (newDelay < 1 || newDelay > maxDelay) {
+            audioIO.playerDelay = 1
+        } else {
+            audioIO.playerDelay = newDelay
+        }
+    }
+    
 
+    // Headset IMU
     func checkIMU() {
         speakerType = audioIO.outputDeviceType()
         imuAvailable = headMotionManager.isDeviceMotionAvailable && speakerType == "Bluetooth A2DP"
@@ -139,7 +222,7 @@ class SensorViewModel: ObservableObject {
 
         addMessage("Start Motion Update")
         isUpdatingHeadMotion = true
-        headMotionManager.startDeviceMotionUpdates(to: motionUpdateQueue) { [weak self] (motion, error) in
+        headMotionManager.startDeviceMotionUpdates(to: OperationQueue.current!) { [weak self] (motion, error) in
             guard let weakself = self else {
                 return
             }
@@ -167,28 +250,23 @@ class SensorViewModel: ObservableObject {
     
     func updateMotionData(_ motion: CMDeviceMotion) {
         let attitude = motion.attitude
+        let acceleration = motion.userAcceleration
         DispatchQueue.main.async {
-            (self.headPitch, self.headYaw, self.headRoll) = (-Float(attitude.pitch), Float(attitude.yaw), Float(-attitude.roll))
+            (self.headPitch, self.headYaw, self.headRoll)
+            = (-Float(attitude.pitch), Float(attitude.yaw), Float(-attitude.roll))
+            (self.imuData4Server[10], self.imuData4Server[11], self.imuData4Server[12])
+            = (Float32(attitude.roll), Float32(attitude.pitch), Float32(attitude.yaw))
+            (self.imuData4Server[13], self.imuData4Server[14], self.imuData4Server[15])
+            = (Float32(acceleration.x), Float32(acceleration.y), Float32(acceleration.z))
         }
     }
     
-    @Published var iphonePitch: Float = 0
-    @Published var iphoneYaw: Float = 0
-    @Published var iphoneRoll: Float = 0
-    @Published var iphoneAccX: Float = 0
-    @Published var iphoneAccY: Float = 0
-    @Published var iphoneAccZ: Float = 0
-    private var isUpdatingMotion: Bool = false
-    private var motionManager = CMMotionManager()
-    
+
+    // Phone IMU
     
 
-    @Published var listenHost: String = "LocalHost"
-    @Published var listenPort: Int = 12345
-    @Published var serverStarted: Bool = false
-    @Published var isAntitarget: Bool = false
-    var tcpServer = AudioTcpServer()
-    
+
+    // TCP server
     func getIPAddress() -> String? {
         var address: String?
         var ifaddr: UnsafeMutablePointer<ifaddrs>? = nil
@@ -243,11 +321,8 @@ class SensorViewModel: ObservableObject {
         tcpServer.h16D320Ch1Handler.isAntitarget = isAntitarget
     }
     
-    @Published var connectHost: String = "192.168.1.10"
-    @Published var connectPort: Int = 12345
-    @Published var isConnected: Bool = false
-    var tcpClient = AudioTcpClient()
-    
+
+    // TCP client
     func connectHostChanged(to host: String) {
         tcpClient.host = host
         if isConnected {
@@ -262,6 +337,7 @@ class SensorViewModel: ObservableObject {
     func startConnection() {
         tcpClient.AsyncStart()
         addMessage("Try connect to \(connectHost):\(connectPort)")
+        startAudioSess()
     }
     
     func closeConnection() {
@@ -269,6 +345,8 @@ class SensorViewModel: ObservableObject {
         isConnected = false
     }
     
-
+    func channelNumberChanged() {
+        isStereo.toggle()
+    }
 }
 
