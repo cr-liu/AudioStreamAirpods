@@ -21,7 +21,7 @@ class RingBuffer<T> {
         capacity = count
     }
     
-    func countSize() -> Int {
+    private func countSize() -> Int {
         if isEmpty {
             return 0
         }

@@ -137,11 +137,11 @@ class SensorViewModel: ObservableObject {
             }
             tcpServer.h16D320Ch1Handler.messages = []
         }
-        if !tcpServer.h80D320Ch1Handler.messages.isEmpty {
-            for msg in tcpServer.h80D320Ch1Handler.messages {
+        if !tcpServer.h80D10ms16kHandler.messages.isEmpty {
+            for msg in tcpServer.h80D10ms16kHandler.messages {
                 addMessage(msg)
             }
-            tcpServer.h80D320Ch1Handler.messages = []
+            tcpServer.h80D10ms16kHandler.messages = []
         }
         if listenHost == "LocalHost" {
             if let ifAddress = getIPAddress() {

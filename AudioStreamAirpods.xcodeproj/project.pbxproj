@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -22,10 +22,10 @@
 		5A47AFD726565420000BAD9A /* CheckBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A47AFD626565420000BAD9A /* CheckBoxView.swift */; };
 		5A47AFDD2657AC5D000BAD9A /* RobotScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A47AFDC2657AC5D000BAD9A /* RobotScene.swift */; };
 		5A70082E2668D5CB007D3DCB /* iphone11.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 5A70082D2668D5CB007D3DCB /* iphone11.usdz */; };
-		5A8478A4273B938400ECFCEF /* H80D320Ch1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8478A3273B938400ECFCEF /* H80D320Ch1.swift */; };
+		5A8478A4273B938400ECFCEF /* H80D10ms16k.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8478A3273B938400ECFCEF /* H80D10ms16k.swift */; };
 		5A8478A62740E3CD00ECFCEF /* RingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8478A52740E3CD00ECFCEF /* RingBuffer.swift */; };
+		5AAAFF98276ECE11007BEE1D /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 5AAAFF97276ECE11007BEE1D /* NIO */; };
 		5ADC885F2661B414002C4F84 /* AudioTcpClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADC885E2661B414002C4F84 /* AudioTcpClient.swift */; };
-		5AE523ED2664C10700B914A2 /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 5AE523EC2664C10700B914A2 /* NIO */; };
 		5AE523EF26661F1600B914A2 /* H16D320Ch1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE523EE26661F1600B914A2 /* H16D320Ch1.swift */; };
 /* End PBXBuildFile section */
 
@@ -47,7 +47,7 @@
 		5A47AFD626565420000BAD9A /* CheckBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxView.swift; sourceTree = "<group>"; };
 		5A47AFDC2657AC5D000BAD9A /* RobotScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotScene.swift; sourceTree = "<group>"; };
 		5A70082D2668D5CB007D3DCB /* iphone11.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = iphone11.usdz; sourceTree = "<group>"; };
-		5A8478A3273B938400ECFCEF /* H80D320Ch1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = H80D320Ch1.swift; sourceTree = "<group>"; };
+		5A8478A3273B938400ECFCEF /* H80D10ms16k.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = H80D10ms16k.swift; sourceTree = "<group>"; };
 		5A8478A52740E3CD00ECFCEF /* RingBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingBuffer.swift; sourceTree = "<group>"; };
 		5ADC885E2661B414002C4F84 /* AudioTcpClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTcpClient.swift; sourceTree = "<group>"; };
 		5AE523EE26661F1600B914A2 /* H16D320Ch1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = H16D320Ch1.swift; sourceTree = "<group>"; };
@@ -58,7 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5AE523ED2664C10700B914A2 /* NIO in Frameworks */,
+				5AAAFF98276ECE11007BEE1D /* NIO in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +70,7 @@
 			children = (
 				5A3F88C8264CB03500A19E5E /* AudioStreamAirpods */,
 				5A3F88C7264CB03500A19E5E /* Products */,
+				5AA685AB276DB5F300692436 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -88,7 +89,7 @@
 				5A8478A52740E3CD00ECFCEF /* RingBuffer.swift */,
 				5ADC885E2661B414002C4F84 /* AudioTcpClient.swift */,
 				5AE523EE26661F1600B914A2 /* H16D320Ch1.swift */,
-				5A8478A3273B938400ECFCEF /* H80D320Ch1.swift */,
+				5A8478A3273B938400ECFCEF /* H80D10ms16k.swift */,
 				5A3F88C9264CB03500A19E5E /* AudioStreamAirpodsApp.swift */,
 				5A47AFCA265238E5000BAD9A /* SensorViewModel.swift */,
 				5A3F88DC264D090500A19E5E /* AudioIO.swift */,
@@ -124,6 +125,13 @@
 			name = views;
 			sourceTree = "<group>";
 		};
+		5AA685AB276DB5F300692436 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -141,7 +149,7 @@
 			);
 			name = AudioStreamAirpods;
 			packageProductDependencies = (
-				5AE523EC2664C10700B914A2 /* NIO */,
+				5AAAFF97276ECE11007BEE1D /* NIO */,
 			);
 			productName = AudioStreamAirpods;
 			productReference = 5A3F88C6264CB03500A19E5E /* AudioStreamAirpods.app */;
@@ -162,7 +170,7 @@
 				};
 			};
 			buildConfigurationList = 5A3F88C1264CB03500A19E5E /* Build configuration list for PBXProject "AudioStreamAirpods" */;
-			compatibilityVersion = "Xcode 9.3";
+			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -171,7 +179,7 @@
 			);
 			mainGroup = 5A3F88BD264CB03500A19E5E;
 			packageReferences = (
-				5AE523EB2664C10700B914A2 /* XCRemoteSwiftPackageReference "swift-nio" */,
+				5AAAFF96276ECE11007BEE1D /* XCRemoteSwiftPackageReference "swift-nio" */,
 			);
 			productRefGroup = 5A3F88C7264CB03500A19E5E /* Products */;
 			projectDirPath = "";
@@ -205,7 +213,7 @@
 				5A47AFD726565420000BAD9A /* CheckBoxView.swift in Sources */,
 				5A3F88DF264E3B9100A19E5E /* MotionSceneView.swift in Sources */,
 				5AE523EF26661F1600B914A2 /* H16D320Ch1.swift in Sources */,
-				5A8478A4273B938400ECFCEF /* H80D320Ch1.swift in Sources */,
+				5A8478A4273B938400ECFCEF /* H80D10ms16k.swift in Sources */,
 				5A3F88CA264CB03500A19E5E /* AudioStreamAirpodsApp.swift in Sources */,
 				5A47AFD526563F12000BAD9A /* SettingView.swift in Sources */,
 				5A47AFCE265501D6000BAD9A /* AudioTcpServer.swift in Sources */,
@@ -226,6 +234,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -287,6 +296,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -343,6 +353,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"AudioStreamAirpods/Preview Content\"";
 				DEVELOPMENT_TEAM = 67SU59PVRY;
@@ -365,6 +376,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"AudioStreamAirpods/Preview Content\"";
 				DEVELOPMENT_TEAM = 67SU59PVRY;
@@ -406,20 +418,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		5AE523EB2664C10700B914A2 /* XCRemoteSwiftPackageReference "swift-nio" */ = {
+		5AAAFF96276ECE11007BEE1D /* XCRemoteSwiftPackageReference "swift-nio" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-nio";
+			repositoryURL = "https://github.com/apple/swift-nio.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.29.0;
+				minimumVersion = 2.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		5AE523EC2664C10700B914A2 /* NIO */ = {
+		5AAAFF97276ECE11007BEE1D /* NIO */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 5AE523EB2664C10700B914A2 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			package = 5AAAFF96276ECE11007BEE1D /* XCRemoteSwiftPackageReference "swift-nio" */;
 			productName = NIO;
 		};
 /* End XCSwiftPackageProductDependency section */

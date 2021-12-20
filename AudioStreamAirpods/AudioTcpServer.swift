@@ -15,7 +15,7 @@ class AudioTcpServer {
     var port: Int = 12345
     // Only works on ipv4 or ipv6; if need both, create instance in the pipline!
     let h16D320Ch1Handler = H16D320Ch1ServerHandler()
-    let h80D320Ch1Handler = H80D320Ch1ServerHandler()
+    let h80D10ms16kHandler = H80D10ms16kServerHandler()
     private let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
     private var channel: Channel?
     private lazy var serverBootstrap = ServerBootstrap(group: group)
@@ -26,7 +26,7 @@ class AudioTcpServer {
         // Set the handlers that are applied to the accepted Channels
         .childChannelInitializer { channel in
             // Add handler that will buffer data until a \n is received
-            channel.pipeline.addHandlers([BackPressureHandler(), self.h80D320Ch1Handler])
+            channel.pipeline.addHandlers([BackPressureHandler(), self.h80D10ms16kHandler])
 //            channel.pipeline.addHandlers([self.h16D320Ch1Handler])
         }
         
@@ -37,7 +37,7 @@ class AudioTcpServer {
         .childChannelOption(ChannelOptions.recvAllocator, value: AdaptiveRecvByteBufferAllocator())
     
     init(withImu imuPtr: UnsafeRawPointer) {
-        h80D320Ch1Handler.imuDataPtr = imuPtr
+        h80D10ms16kHandler.imuDataPtr = imuPtr
     }
     
     deinit {
@@ -69,11 +69,11 @@ class AudioTcpServer {
     }
     
     func prepareHeader() {
-        h80D320Ch1Handler.preparePktHeader()
+        h80D10ms16kHandler.preparePktHeader()
     }
     
-    func send2Channels(_ dataArray: ContiguousArray<Int16>) {
-        h80D320Ch1Handler.cmdFromServer(send: dataArray)
+    func send2Channels(_ dataArray: Array<Int16>) {
+        h80D10ms16kHandler.cmdFromServer(send: dataArray)
     }
 }
 
@@ -160,7 +160,7 @@ final class H16D320Ch1ServerHandler: H16D320Ch1, ChannelInboundHandler {
     }
 }
 
-final class H80D320Ch1ServerHandler: H80D320Ch1, ChannelInboundHandler {
+final class H80D10ms16kServerHandler: H80D10ms16k, ChannelInboundHandler {
     public typealias InboundIn = ByteBuffer
     public typealias OutboundOut = ByteBuffer
     
@@ -212,20 +212,20 @@ final class H80D320Ch1ServerHandler: H80D320Ch1, ChannelInboundHandler {
             let unixtimeDouble: Double = Date().timeIntervalSince1970
             let unixtime: Int32 = Int32(floor(unixtimeDouble))
             let milisec: Int16 = Int16((unixtimeDouble - Double(unixtime)) * 1000)
-            self.sktHeader = H80D320Ch1Header(unixTime: unixtime, ms: milisec, pktID: self.packetID, humanID: 0,
+            self.sktHeader = H80D10ms16kHeader(unixTime: unixtime, ms: milisec, pktID: self.packetID, humanID: 0,
                                               isAntitarget: self.isAntitarget ? -1 : 1, speechActivity: 0)
             self.packetID += 1
         }
     }
     
-    func prepareBuf(_ dataArray: ContiguousArray<Int16>) {
+    func prepareBuf(_ dataArray: Array<Int16>) {
         buf.moveWriterIndex(to: 0)
         let rawPtr = buf.withUnsafeMutableWritableBytes{ $0 }.baseAddress!
-        writeH80D320Ch1(to: rawPtr, withSound: dataArray)
+        writeSocketBuf(to: rawPtr, withSound: dataArray)
         buf.moveWriterIndex(to: buf.capacity)
     }
     
-    func cmdFromServer(send dataArray: ContiguousArray<Int16>) {
+    func cmdFromServer(send dataArray: Array<Int16>) {
         if !hasClient { return }
         self.prepareBuf(dataArray)
         self.channelsSyncQueue.async {

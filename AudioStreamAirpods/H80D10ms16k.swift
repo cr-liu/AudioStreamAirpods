@@ -8,17 +8,16 @@
 import Foundation
 import Accelerate
 
-class H80D320Ch1 {
+class H80D10ms16k {
     
 //    var lastFrame: Int16 = 0
-
-    var sktHeader: H80D320Ch1Header?
+    var sktHeader: H80D10ms16kHeader?
     var imuDataPtr: UnsafeRawPointer? // pointer to [Float32 * 16] imu data
-
+    var audioChannels: Int = 2
 
     let headerSize = 80
     
-    struct H80D320Ch1Header {
+    struct H80D10ms16kHeader {
         var unixTime: Int32 = 0
         var ms: Int16 = 0
         var pktID: Int32 = 0
@@ -28,7 +27,7 @@ class H80D320Ch1 {
     }
     
     @inlinable
-    func writeH80D320Ch1(to bufPtr: UnsafeMutableRawPointer, withSound soundData: ContiguousArray<Int16>) {
+    func writeSocketBuf(to bufPtr: UnsafeMutableRawPointer, withSound soundData: Array<Int16>) {
         var movingPtr = bufPtr
         UnsafeMutablePointer<Int32>(movingPtr.assumingMemoryBound(to: Int32.self)).pointee = sktHeader!.unixTime
         movingPtr += MemoryLayout<Int32>.size
