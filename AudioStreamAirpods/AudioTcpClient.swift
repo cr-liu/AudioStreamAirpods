@@ -96,9 +96,8 @@ class H80D10ms16kClientHandler: H80D10ms16k, ChannelInboundHandler {
     typealias OutboundOut = ByteBuffer
 
     private let packetSize = 1024 // 512 // 400
-    lazy var packetBuf = RingBuffer<UInt8>(repeating: 0, count: packetSize * 10)
+    lazy var packetBuf = RingBuffer<UInt8>(repeating: 0, count: packetSize * 60)
     weak var ringBuf: RingBuffer<Int16>?
-    private var soundData = Array<Int16>(repeating: 0, count: 160)
     
     func channelActive(context: ChannelHandlerContext) {
         let message = "AudioStreamAirpods"
@@ -109,11 +108,11 @@ class H80D10ms16kClientHandler: H80D10ms16k, ChannelInboundHandler {
     
     func channelRead(context: ChannelHandlerContext, data: NIOAny) {
         var buffer = unwrapInboundIn(data)
+//        print(buffer.readableBytes)
         packetBuf.pushBack(buffer.readBytes(length: buffer.readableBytes)!)
         if packetBuf.count >= packetSize {
             readPacket()
-//            self.ringBuf!.pushBack(soundData48k)
-            ringBuf!.pushBack(soundData)
+            ringBuf!.pushBack(stereoData)
         }
     }
     
@@ -125,7 +124,16 @@ class H80D10ms16kClientHandler: H80D10ms16k, ChannelInboundHandler {
     func readPacket() {
         let packet = packetBuf.popFront(packetSize)
         let movingPtr = packet.withUnsafeBytes{ $0 }.baseAddress! + headerSize
-        let sndDataPtr = soundData.withUnsafeMutableBytes{ $0 }.baseAddress!
-        memcpy(sndDataPtr, movingPtr, (soundData.count) * MemoryLayout<Int16>.size)
+        if audioChannels == 2 {
+            let stereoDataPtr = stereoData.withUnsafeMutableBytes{ $0 }
+            memcpy(stereoDataPtr.baseAddress, movingPtr, stereoData.count * MemoryLayout<Int16>.size)
+        } else {
+            let monoDataPtr = monoData.withUnsafeMutableBytes{ $0 }
+            memcpy(monoDataPtr.baseAddress, movingPtr, monoData.count * MemoryLayout<Int16>.size)
+            for i in 0 ..< monoData.count {
+                stereoData[i * 2] = monoData[i]
+                stereoData[i * 2 + 1] = monoData[i]
+            }
+        }
     }
 }

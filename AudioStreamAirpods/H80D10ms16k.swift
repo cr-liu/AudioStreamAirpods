@@ -9,11 +9,11 @@ import Foundation
 import Accelerate
 
 class H80D10ms16k {
-    
-//    var lastFrame: Int16 = 0
     var sktHeader: H80D10ms16kHeader?
     var imuDataPtr: UnsafeRawPointer? // pointer to [Float32 * 16] imu data
     var audioChannels: Int = 2
+    var monoData = Array<Int16>(repeating: 0, count: 160)
+    var stereoData = Array<Int16>(repeating: 0, count: 320) // 160 x 2ch
 
     let headerSize = 80
     
@@ -27,7 +27,7 @@ class H80D10ms16k {
     }
     
     @inlinable
-    func writeSocketBuf(to bufPtr: UnsafeMutableRawPointer, withSound soundData: Array<Int16>) {
+    func writeSocketBuf(to bufPtr: UnsafeMutableRawPointer, withSound soundData: Array<Int16>?) {
         var movingPtr = bufPtr
         UnsafeMutablePointer<Int32>(movingPtr.assumingMemoryBound(to: Int32.self)).pointee = sktHeader!.unixTime
         movingPtr += MemoryLayout<Int32>.size
@@ -45,7 +45,12 @@ class H80D10ms16k {
         memcpy(movingPtr, imuDataPtr, MemoryLayout<Float32>.size * 16)
         movingPtr += MemoryLayout<Float32>.size * 16
         
-        let sndDataPtr = soundData.withUnsafeBytes{ $0 }
-        memcpy(movingPtr, sndDataPtr.baseAddress, soundData.count * MemoryLayout<Int16>.size)
+        if soundData != nil {
+            let sndDataPtr = soundData!.withUnsafeBytes{ $0 }
+            memcpy(movingPtr, sndDataPtr.baseAddress, soundData!.count * MemoryLayout<Int16>.size)
+        } else {
+            let sndDataPtr = stereoData.withUnsafeBytes{ $0 }
+            memcpy(movingPtr, sndDataPtr.baseAddress, stereoData.count * MemoryLayout<Int16>.size)
+        }
     }
 }

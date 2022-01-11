@@ -26,7 +26,7 @@ class AudioTcpServer {
         // Set the handlers that are applied to the accepted Channels
         .childChannelInitializer { channel in
             // Add handler that will buffer data until a \n is received
-            channel.pipeline.addHandlers([BackPressureHandler(), self.h80D10ms16kHandler])
+            channel.pipeline.addHandlers([self.h80D10ms16kHandler])
 //            channel.pipeline.addHandlers([self.h16D320Ch1Handler])
         }
         
@@ -166,8 +166,8 @@ final class H80D10ms16kServerHandler: H80D10ms16k, ChannelInboundHandler {
     
     static let sktSize = 1024 // 512 // 400
     var messages: [String] = []
-    private var packetID: Int32 = 0
     var isAntitarget: Bool = false
+    private var packetID: Int32 = 0
     private var buf: ByteBuffer = ByteBufferAllocator().buffer(capacity: sktSize)
     private let channelsSyncQueue = DispatchQueue(label: "tcpQueue", qos: .userInitiated)
     private var channels: [ObjectIdentifier: Channel] = [:]
@@ -219,6 +219,10 @@ final class H80D10ms16kServerHandler: H80D10ms16k, ChannelInboundHandler {
     }
     
     func prepareBuf(_ dataArray: Array<Int16>) {
+//        for i in 0 ..< dataArray.count {
+//            stereoData[i * 2] = dataArray[i]
+//            stereoData[i * 2 + 1] = dataArray[i]
+//        }
         buf.moveWriterIndex(to: 0)
         let rawPtr = buf.withUnsafeMutableWritableBytes{ $0 }.baseAddress!
         writeSocketBuf(to: rawPtr, withSound: dataArray)

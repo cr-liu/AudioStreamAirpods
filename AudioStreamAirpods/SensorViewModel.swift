@@ -12,7 +12,7 @@ import AVFoundation
 class SensorViewModel: ObservableObject {
     @Published var messages: [String] = []
     
-    var maxDelay = 10
+    var maxDelay = 60
     @Published var playerDelay: Int = 1
     @Published var isPlayingEcho: Bool = false
     @Published var isPlaying : Bool = false
@@ -65,7 +65,7 @@ class SensorViewModel: ObservableObject {
     @Published var isConnected: Bool = false
     @Published var isStereo: Bool = true
     var tcpClient: AudioTcpClient
-    var tcpClientBuffer: RingBuffer<Int16>
+    var tcpClientRingBuf: RingBuffer<Int16>
     
     init() {
         audioIO = AudioIO()
@@ -77,9 +77,9 @@ class SensorViewModel: ObservableObject {
         
         tcpClient = AudioTcpClient()
         audioIO.tcpClient = tcpClient
-        tcpClientBuffer = RingBuffer<Int16>(repeating: 0, count: 160 * maxDelay)
-        audioIO.tcpSourceNodeBuffer = tcpClientBuffer
-        tcpClient.setBuffer(tcpClientBuffer)
+        tcpClientRingBuf = RingBuffer<Int16>(repeating: 0, count: 320 * maxDelay)
+        audioIO.tcpSourceRingBuf = tcpClientRingBuf
+        tcpClient.setBuffer(tcpClientRingBuf)
         
         headMotionManager = CMHeadphoneMotionManager()
         
@@ -347,6 +347,8 @@ class SensorViewModel: ObservableObject {
     
     func channelNumberChanged() {
         isStereo.toggle()
+        tcpClient.h80D10ms16kHandler.audioChannels = isStereo ? 2 : 1
+        addMessage(isStereo ? "Expecting 2ch sound" : "Expecting 1ch sound")
     }
 }
 

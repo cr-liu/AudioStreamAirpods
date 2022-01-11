@@ -88,14 +88,18 @@ class RingBuffer<T> {
     
     func removeAll() {
 //        buf.removeAll(keepingCapacity: true)
+        os_unfair_lock_lock(&lock)
         readIndex = 0
         writeIndex = 0
+        os_unfair_lock_unlock(&lock)
     }
     
     func resize(_ newSize: Int) {
         buf.removeAll(keepingCapacity: false)
+        os_unfair_lock_lock(&lock)
         buf.reserveCapacity(newSize)
         capacity = newSize
+        os_unfair_lock_unlock(&lock)
     }
     
     private func advanceWriteIndex(by steps: Int = 1) {

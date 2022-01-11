@@ -30,24 +30,24 @@ class AudioIO {
     private var sr: Double = 48000
     private var socketSize = Int(16000 * 0.01)
     
-    private var repeatRingBuf: RingBuffer<Int16>
-    private var tcpServerRingBuf: RingBuffer<Int16>
-    
-    private var format48kCh1 = AVAudioFormat(commonFormat: AVAudioCommonFormat.pcmFormatInt16,
-                                                  sampleRate: 48000, channels: 1, interleaved: true)
     private var format16kCh1 = AVAudioFormat(commonFormat: AVAudioCommonFormat.pcmFormatInt16,
                                                  sampleRate: 16000, channels: 1, interleaved: true)
     private var format16kCh2 = AVAudioFormat(commonFormat: AVAudioCommonFormat.pcmFormatInt16,
                                                  sampleRate: 16000, channels: 2, interleaved: true)
-    private var format44kCh1 = AVAudioFormat(commonFormat: AVAudioCommonFormat.pcmFormatInt16,
-                                                 sampleRate: 44100, channels: 1, interleaved: true)
+//    private var format48kCh1 = AVAudioFormat(commonFormat: AVAudioCommonFormat.pcmFormatInt16,
+//                                                  sampleRate: 48000, channels: 1, interleaved: true)
+//    private var format44kCh1 = AVAudioFormat(commonFormat: AVAudioCommonFormat.pcmFormatInt16,
+//                                                 sampleRate: 44100, channels: 1, interleaved: true)
     private var state: AudioEngineState = .stopped
     private var isInterrupted = false
     private var configChangePending = false
     
+    private var repeatRingBuf: RingBuffer<Int16>
+    private var tcpServerRingBuf: RingBuffer<Int16>
+    weak var tcpSourceRingBuf: RingBuffer<Int16>?
+    
     weak var tcpServer: AudioTcpServer?
     weak var tcpClient: AudioTcpClient?
-    weak var tcpSourceNodeBuffer: RingBuffer<Int16>?
     
     init() {
         repeatRingBuf = RingBuffer<Int16>(repeating: 0, count: deviceBufSize * 4)
@@ -75,7 +75,7 @@ class AudioIO {
         
         srConverter = AVAudioConverter(from: engine.inputNode.outputFormat(forBus: 0), to: format16kCh1!)!
         micMuteMixer = AVAudioMixerNode()
-        micMuteMixer.volume = 1
+        micMuteMixer.volume = 0
         tcpMuteMixer = AVAudioMixerNode()
         tcpMuteMixer.volume = 0
         
@@ -144,23 +144,24 @@ class AudioIO {
             return noErr
         }
         
-        tcpSourceNode = AVAudioSourceNode() { [weak self] (silence, timeStamp, frameCount, audioBufferList) -> OSStatus in
+        tcpSourceNode = AVAudioSourceNode(format: format16kCh2!) { [weak self] (silence, timeStamp, frameCount, audioBufferList) -> OSStatus in
             guard let weakself = self else {
                 return noErr
             }
 
             let ptr = audioBufferList.pointee.mBuffers.mData
-            if weakself.tcpSourceNodeBuffer!.count < frameCount {
-//                print(weakself.tcpSourceNodeBuffer!.count())
+            if weakself.tcpSourceRingBuf!.count < frameCount * 2 {
                 weakself.firstShot = true
             }
-            if (!weakself.firstShot || weakself.tcpSourceNodeBuffer!.count >= 480 * weakself.playerDelay) {
-                let soundArray = weakself.tcpSourceNodeBuffer!.popFront(Int(frameCount))
+            if (!weakself.firstShot || weakself.tcpSourceRingBuf!.count >= 160 * 2 * weakself.playerDelay) {
+                let soundArray = weakself.tcpSourceRingBuf!.popFront(Int(frameCount) * 2)
                 soundArray.withUnsafeBytes{ rawPointer in
-                    memcpy(ptr, rawPointer.baseAddress, Int(frameCount * 2))
+                    memcpy(ptr, rawPointer.baseAddress, soundArray.count * MemoryLayout<Int16>.size)
                     return
                 }
                 weakself.firstShot = false
+            } else {
+                silence.pointee = true
             }
             return noErr
         }
@@ -176,10 +177,9 @@ class AudioIO {
     }
     
     private func makeConnections() {
-//        engine.connect(engine.inputNode, to: downsampleMixerNode, format: format48kCh1)
         engine.connect(engine.inputNode, to: sinkNode, format: engine.inputNode.outputFormat(forBus: 0))
         engine.connect(micSourceNode, to: micMuteMixer, format: format16kCh1)
-        engine.connect(tcpSourceNode, to: tcpMuteMixer, format: format16kCh1)
+        engine.connect(tcpSourceNode, to: tcpMuteMixer, format: format16kCh2)
         engine.connect(micMuteMixer, to: engine.mainMixerNode, format: format16kCh2)
         engine.connect(tcpMuteMixer, to: engine.mainMixerNode, format: format16kCh2)
 
@@ -196,14 +196,14 @@ class AudioIO {
         } else {
             try engine.start()
             state = .started
-            tcpSourceNodeBuffer?.removeAll()
+            tcpSourceRingBuf?.removeAll()
         }
     }
     
     func resumeAudioSess() throws {
         try engine.start()
         state = .started
-        tcpSourceNodeBuffer?.removeAll()
+        tcpSourceRingBuf?.removeAll()
         firstShot = true
     }
     
@@ -240,6 +240,7 @@ class AudioIO {
     }
     
     func playTcpSource(_ flag: Bool) {
+        tcpSourceRingBuf?.removeAll()
         tcpMuteMixer.volume = flag ? 1 : 0
     }
     
