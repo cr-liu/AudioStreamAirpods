@@ -15,7 +15,9 @@ struct MessageView: View {
             ScrollView {
                 LazyVStack(alignment: .leading) {
                     ForEach(sensorVM.messages, id: \.self) { text in
-                        Text(text).id(text.self)
+                        Text(text)
+                            .foregroundColor(.secondary)
+                            .id(text.self)
                     }.onChange(of: sensorVM.messages.count) { _ in
                         proxy.scrollTo(sensorVM.messages.last.self, anchor: .bottom)
                     }

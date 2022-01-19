@@ -10,18 +10,25 @@ import SwiftUI
 struct SensorView: View {
     @EnvironmentObject var sensorVM: SensorViewModel
     @State private var showingSettingView: Bool = false
+    @State private var showingBluetoothView: Bool = false
     
     var body: some View {
         VStack {
             HStack(alignment: .top) {
-                Image(systemName: "airpodspro")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 20)
-                    .foregroundColor(sensorVM.imuAvailable ? .accentColor : .gray)
-                    .onTapGesture {
-                        sensorVM.isUpdatingHeadMotion ? sensorVM.stopMotionUpdate() : sensorVM.startHeadMotionUpdate()
-                    }
+                Button(action: {
+                    self.showingBluetoothView.toggle()
+                }) {
+                    Image(systemName: "airpodspro")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 20)
+                        .foregroundColor(sensorVM.imuAvailable ? .accentColor : .gray)
+                }.sheet(isPresented: $showingBluetoothView) {
+                    BluetoothView()
+                        .onAppear(perform: { sensorVM.scanBluetooth()
+                        })
+                        .environmentObject(sensorVM)
+                }
                 
                 MotionSceneView()
                     .offset(y: -300.0)
@@ -46,6 +53,7 @@ struct SensorView: View {
             HStack{
                 CheckBoxView(checked: $sensorVM.isAntitarget)
                 Text("Antitarget")
+                    .foregroundColor(.secondary)
             }.onTapGesture {
                 sensorVM.makeAntitarget()
             }

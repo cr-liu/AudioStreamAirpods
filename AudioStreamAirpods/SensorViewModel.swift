@@ -8,6 +8,7 @@
 import Foundation
 import CoreMotion
 import AVFoundation
+import CoreBluetooth
 
 class SensorViewModel: ObservableObject {
     @Published var messages: [String] = []
@@ -67,6 +68,9 @@ class SensorViewModel: ObservableObject {
     var tcpClient: AudioTcpClient
     var tcpClientRingBuf: RingBuffer<Int16>
     
+    @Published var bluetoothPeripherals = Set<CBPeripheral>()
+    weak var bluetoothLEManager: BluetoothCentralManager?
+    
     init() {
         audioIO = AudioIO()
         
@@ -123,25 +127,25 @@ class SensorViewModel: ObservableObject {
             for msg in audioIO.messages {
                 addMessage(msg)
             }
-            audioIO.messages = []
+            audioIO.messages.removeAll()
         }
         if !tcpServer.messages.isEmpty {
             for msg in tcpServer.messages {
                 addMessage(msg)
             }
-            tcpServer.messages = []
+            tcpServer.messages.removeAll()
         }
         if !tcpServer.h16D320Ch1Handler.messages.isEmpty {
             for msg in tcpServer.h16D320Ch1Handler.messages {
                 addMessage(msg)
             }
-            tcpServer.h16D320Ch1Handler.messages = []
+            tcpServer.h16D320Ch1Handler.messages.removeAll()
         }
         if !tcpServer.h80D10ms16kHandler.messages.isEmpty {
             for msg in tcpServer.h80D10ms16kHandler.messages {
                 addMessage(msg)
             }
-            tcpServer.h80D10ms16kHandler.messages = []
+            tcpServer.h80D10ms16kHandler.messages.removeAll()
         }
         if listenHost == "LocalHost" {
             if let ifAddress = getIPAddress() {
@@ -153,8 +157,14 @@ class SensorViewModel: ObservableObject {
             for msg in tcpClient.messages {
                 addMessage(msg)
             }
-            tcpClient.messages = []
+            tcpClient.messages.removeAll()
             isConnected = tcpClient.isConnected
+        }
+        if bluetoothLEManager != nil && !(bluetoothLEManager!.messages.isEmpty) {
+            for msg in bluetoothLEManager!.messages {
+                addMessage(msg)
+            }
+            bluetoothLEManager!.messages.removeAll()
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: collectMessage)
 //        print("test...")
@@ -215,12 +225,13 @@ class SensorViewModel: ObservableObject {
     }
     
     func startHeadMotionUpdate() {
+        bluetoothLEManager?.cleanup()
         checkIMU()
         guard imuAvailable, !isUpdatingHeadMotion else {
             return
         }
 
-        addMessage("Start Motion Update")
+        addMessage("Start airpods Motion Update")
         isUpdatingHeadMotion = true
         headMotionManager.startDeviceMotionUpdates(to: OperationQueue.current!) { [weak self] (motion, error) in
             guard let weakself = self else {
@@ -231,7 +242,6 @@ class SensorViewModel: ObservableObject {
                     weakself.addMessage("\(error)")
                 }
             }
-
             if let motion = motion {
                 weakself.updateMotionData(motion)
             }
@@ -243,7 +253,7 @@ class SensorViewModel: ObservableObject {
               isUpdatingHeadMotion else {
             return
         }
-        addMessage("Stop Motion Update")
+        addMessage("Stop airpods Motion Update")
         isUpdatingHeadMotion = false
         headMotionManager.stopDeviceMotionUpdates()
     }
@@ -349,6 +359,23 @@ class SensorViewModel: ObservableObject {
         isStereo.toggle()
         tcpClient.h80D10ms16kHandler.audioChannels = isStereo ? 2 : 1
         addMessage(isStereo ? "Expecting 2ch sound" : "Expecting 1ch sound")
+    }
+    
+    // Bluetooth LE IMU
+    func scanBluetooth() {
+        let scanWorkItem = DispatchWorkItem {
+            self.bluetoothLEManager!.retrievePeripheral()
+        }
+        DispatchQueue.global(qos: .userInitiated).async {
+            scanWorkItem.perform()
+        }
+        scanWorkItem.notify(queue: DispatchQueue.main) {
+            self.bluetoothPeripherals = self.bluetoothLEManager!.peripherals
+        }
+    }
+    
+    func connectBluetooth(_ idx: Int) {
+        bluetoothLEManager!.asyncConnectPeripheral(idx)
     }
 }
 

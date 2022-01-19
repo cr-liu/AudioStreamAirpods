@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5A23080827954D03001DCE5E /* BluetoothCentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A23080727954D03001DCE5E /* BluetoothCentralManager.swift */; };
+		5A23080A279564CD001DCE5E /* BluetoothView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A230809279564CD001DCE5E /* BluetoothView.swift */; };
+		5A23080C2797C06C001DCE5E /* Backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A23080B2797C06C001DCE5E /* Backend.swift */; };
 		5A3F88CA264CB03500A19E5E /* AudioStreamAirpodsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88C9264CB03500A19E5E /* AudioStreamAirpodsApp.swift */; };
 		5A3F88CC264CB03500A19E5E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F88CB264CB03500A19E5E /* ContentView.swift */; };
 		5A3F88CE264CB03800A19E5E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A3F88CD264CB03800A19E5E /* Assets.xcassets */; };
@@ -30,6 +33,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5A23080727954D03001DCE5E /* BluetoothCentralManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothCentralManager.swift; sourceTree = "<group>"; };
+		5A230809279564CD001DCE5E /* BluetoothView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothView.swift; sourceTree = "<group>"; };
+		5A23080B2797C06C001DCE5E /* Backend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backend.swift; sourceTree = "<group>"; };
 		5A3F88C6264CB03500A19E5E /* AudioStreamAirpods.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioStreamAirpods.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A3F88C9264CB03500A19E5E /* AudioStreamAirpodsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStreamAirpodsApp.swift; sourceTree = "<group>"; };
 		5A3F88CB264CB03500A19E5E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -85,14 +91,16 @@
 		5A3F88C8264CB03500A19E5E /* AudioStreamAirpods */ = {
 			isa = PBXGroup;
 			children = (
+				5A3F88C9264CB03500A19E5E /* AudioStreamAirpodsApp.swift */,
 				5A47AFCD265501D6000BAD9A /* AudioTcpServer.swift */,
 				5A8478A52740E3CD00ECFCEF /* RingBuffer.swift */,
 				5ADC885E2661B414002C4F84 /* AudioTcpClient.swift */,
 				5AE523EE26661F1600B914A2 /* H16D320Ch1.swift */,
 				5A8478A3273B938400ECFCEF /* H80D10ms16k.swift */,
-				5A3F88C9264CB03500A19E5E /* AudioStreamAirpodsApp.swift */,
 				5A47AFCA265238E5000BAD9A /* SensorViewModel.swift */,
 				5A3F88DC264D090500A19E5E /* AudioIO.swift */,
+				5A23080727954D03001DCE5E /* BluetoothCentralManager.swift */,
+				5A23080B2797C06C001DCE5E /* Backend.swift */,
 				5A3F88CD264CB03800A19E5E /* Assets.xcassets */,
 				5A47AFCC265501A0000BAD9A /* views */,
 				5A3F88D2264CB03800A19E5E /* Info.plist */,
@@ -119,6 +127,7 @@
 				5A47AFD22655FFDE000BAD9A /* MessageView.swift */,
 				5A3F88DE264E3B9100A19E5E /* MotionSceneView.swift */,
 				5A47AFDC2657AC5D000BAD9A /* RobotScene.swift */,
+				5A230809279564CD001DCE5E /* BluetoothView.swift */,
 				5A70082D2668D5CB007D3DCB /* iphone11.usdz */,
 				5A3F88E0264E3D7200A19E5E /* toy_robot_vintage.usdz */,
 			);
@@ -209,7 +218,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A23080827954D03001DCE5E /* BluetoothCentralManager.swift in Sources */,
 				5A3F88CC264CB03500A19E5E /* ContentView.swift in Sources */,
+				5A23080C2797C06C001DCE5E /* Backend.swift in Sources */,
 				5A47AFD726565420000BAD9A /* CheckBoxView.swift in Sources */,
 				5A3F88DF264E3B9100A19E5E /* MotionSceneView.swift in Sources */,
 				5AE523EF26661F1600B914A2 /* H16D320Ch1.swift in Sources */,
@@ -223,6 +234,7 @@
 				5A8478A62740E3CD00ECFCEF /* RingBuffer.swift in Sources */,
 				5A3F88DD264D090500A19E5E /* AudioIO.swift in Sources */,
 				5A47AFCB265238E5000BAD9A /* SensorViewModel.swift in Sources */,
+				5A23080A279564CD001DCE5E /* BluetoothView.swift in Sources */,
 				5A47AFDD2657AC5D000BAD9A /* RobotScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
