@@ -19,15 +19,14 @@ class SensorViewModel: ObservableObject {
     @Published var isPlaying : Bool = false
     @Published var isRecording: Bool = false
     @Published var speakerType: String = ""
-    var audioIO: AudioIO
+    weak var audioIO: AudioIO?
     
     @Published var headPitch: Float = 0
     @Published var headYaw: Float = 0
     @Published var headRoll: Float = 0
     @Published var imuAvailable: Bool = false
     @Published var isUpdatingHeadMotion = false
-    private var headMotionManager: CMHeadphoneMotionManager
-    // private let motionUpdateQueue = DispatchQueue.global(qos: .default)
+    weak var headMotionManager: CMHeadphoneMotionManager?
     
 //    @Published var iphonePitch: Float = 0
 //    @Published var iphoneYaw: Float = 0
@@ -42,8 +41,8 @@ class SensorViewModel: ObservableObject {
     @Published var listenPort: Int = 12345
     @Published var serverStarted: Bool = false
     @Published var isAntitarget: Bool = false
-    var tcpServer: AudioTcpServer
-    var imuData4Server: ContiguousArray<Float32>
+    weak var tcpServer: AudioTcpServer?
+    var imuData4Server = Array<Float32>(repeating: -10000, count: 16)
     //    var phoneRoll: Float32 = -10000
     //    var phonePitch: Float32 = -10000
     //    var phoneYaw: Float32 = -10000
@@ -65,33 +64,13 @@ class SensorViewModel: ObservableObject {
     @Published var connectPort: Int = 12345
     @Published var isConnected: Bool = false
     @Published var isStereo: Bool = true
-    var tcpClient: AudioTcpClient
-    var tcpClientRingBuf: RingBuffer<Int16>
+    weak var tcpClient: AudioTcpClient?
     
     @Published var bluetoothPeripherals = Set<CBPeripheral>()
     weak var bluetoothLEManager: BluetoothCentralManager?
     
     init() {
-        audioIO = AudioIO()
-        
-        imuData4Server = ContiguousArray<Float32>(repeating: -10000, count: 16)
-        let imuPtr = imuData4Server.withUnsafeBytes{ $0 }.baseAddress!
-        tcpServer = AudioTcpServer(withImu: imuPtr)
-        audioIO.tcpServer = tcpServer
-        
-        tcpClient = AudioTcpClient()
-        audioIO.tcpClient = tcpClient
-        tcpClientRingBuf = RingBuffer<Int16>(repeating: 0, count: 320 * maxDelay)
-        audioIO.tcpSourceRingBuf = tcpClientRingBuf
-        tcpClient.setBuffer(tcpClientRingBuf)
-        
-        headMotionManager = CMHeadphoneMotionManager()
-        
         registerForNotifications()
-        if let ifAddress = getIPAddress() {
-            listenHost = ifAddress
-            tcpServer.host = ifAddress
-        }
         collectMessage()
     }
     
@@ -123,42 +102,42 @@ class SensorViewModel: ObservableObject {
     }
     
     func collectMessage() {
-        if !audioIO.messages.isEmpty {
-            for msg in audioIO.messages {
+        if audioIO != nil && !(audioIO!.messages.isEmpty) {
+            for msg in audioIO!.messages {
                 addMessage(msg)
             }
-            audioIO.messages.removeAll()
+            audioIO!.messages.removeAll()
         }
-        if !tcpServer.messages.isEmpty {
-            for msg in tcpServer.messages {
+        if tcpServer != nil && !(tcpServer!.messages.isEmpty) {
+            for msg in tcpServer!.messages {
                 addMessage(msg)
             }
-            tcpServer.messages.removeAll()
+            tcpServer!.messages.removeAll()
         }
-        if !tcpServer.h16D320Ch1Handler.messages.isEmpty {
-            for msg in tcpServer.h16D320Ch1Handler.messages {
+//        if tcpServer != nil && !(tcpServer!.h16D320Ch1Handler.messages.isEmpty) {
+//            for msg in tcpServer!.h16D320Ch1Handler.messages {
+//                addMessage(msg)
+//            }
+//            tcpServer!.h16D320Ch1Handler.messages.removeAll()
+//        }
+        if tcpServer != nil && !(tcpServer!.h80D10ms16kHandler.messages.isEmpty) {
+            for msg in tcpServer!.h80D10ms16kHandler.messages {
                 addMessage(msg)
             }
-            tcpServer.h16D320Ch1Handler.messages.removeAll()
+            tcpServer!.h80D10ms16kHandler.messages.removeAll()
         }
-        if !tcpServer.h80D10ms16kHandler.messages.isEmpty {
-            for msg in tcpServer.h80D10ms16kHandler.messages {
-                addMessage(msg)
-            }
-            tcpServer.h80D10ms16kHandler.messages.removeAll()
-        }
-        if listenHost == "LocalHost" {
+        if tcpServer != nil && listenHost == "LocalHost" {
             if let ifAddress = getIPAddress() {
                 listenHost = ifAddress
-                tcpServer.host = ifAddress
+                tcpServer!.host = ifAddress
             }
         }
-        if !tcpClient.messages.isEmpty {
-            for msg in tcpClient.messages {
+        if tcpClient != nil && !tcpClient!.messages.isEmpty {
+            for msg in tcpClient!.messages {
                 addMessage(msg)
             }
-            tcpClient.messages.removeAll()
-            isConnected = tcpClient.isConnected
+            tcpClient!.messages.removeAll()
+            isConnected = tcpClient!.isConnected
         }
         if bluetoothLEManager != nil && !(bluetoothLEManager!.messages.isEmpty) {
             for msg in bluetoothLEManager!.messages {
@@ -176,7 +155,7 @@ class SensorViewModel: ObservableObject {
         if isRecording {
             return
         }
-        guard let _ = try? audioIO.startAudioSess() else {
+        guard let _ = try? audioIO!.startAudioSess() else {
             addMessage("Failed start audio session!")
             return
         }
@@ -185,43 +164,48 @@ class SensorViewModel: ObservableObject {
     }
     
     func pauseAudioSess() {
-        audioIO.pauseAudioSess()
+        audioIO!.pauseAudioSess()
         isRecording = false
         addMessage("Audio session paused.")
     }
     
     func stopAudioSess() {
-        if audioIO.isStopped() {
+        if audioIO!.isStopped() {
             return
         }
-        audioIO.stopAudioSess()
+        audioIO!.stopAudioSess()
         isRecording = false
         addMessage("Audio session stopped.")
     }
     
     func playTcpSource() {
         isPlaying.toggle()
-        audioIO.playTcpSource(isPlaying)
+        audioIO!.playTcpSource(isPlaying)
     }
     
     func playEcho() {
         isPlayingEcho.toggle()
-        audioIO.playEcho(isPlayingEcho)
+        audioIO!.playEcho(isPlayingEcho)
     }
     
     func playerDelayChanged(to newDelay: Int) {
-        if (newDelay < 1 || newDelay > maxDelay) {
-            audioIO.playerDelay = 1
+        if (newDelay < 1) {
+            audioIO!.playerDelay = 1
+        } else if (newDelay > maxDelay) {
+            audioIO!.playerDelay = maxDelay
         } else {
-            audioIO.playerDelay = newDelay
+            audioIO!.playerDelay = newDelay
         }
     }
     
 
     // Headset IMU
     func checkIMU() {
-        speakerType = audioIO.outputDeviceType()
-        imuAvailable = headMotionManager.isDeviceMotionAvailable && speakerType == "Bluetooth A2DP"
+        if audioIO == nil || headMotionManager == nil {
+            return
+        }
+        speakerType = audioIO!.outputDeviceType()
+        imuAvailable = headMotionManager!.isDeviceMotionAvailable && speakerType == "Bluetooth A2DP"
     }
     
     func startHeadMotionUpdate() {
@@ -233,7 +217,7 @@ class SensorViewModel: ObservableObject {
 
         addMessage("Start airpods Motion Update")
         isUpdatingHeadMotion = true
-        headMotionManager.startDeviceMotionUpdates(to: OperationQueue.current!) { [weak self] (motion, error) in
+        headMotionManager!.startDeviceMotionUpdates(to: OperationQueue.current!) { [weak self] (motion, error) in
             guard let weakself = self else {
                 return
             }
@@ -249,13 +233,13 @@ class SensorViewModel: ObservableObject {
     }
     
     func stopMotionUpdate() {
-        guard headMotionManager.isDeviceMotionAvailable,
+        guard headMotionManager!.isDeviceMotionAvailable,
               isUpdatingHeadMotion else {
             return
         }
         addMessage("Stop airpods Motion Update")
         isUpdatingHeadMotion = false
-        headMotionManager.stopDeviceMotionUpdates()
+        headMotionManager!.stopDeviceMotionUpdates()
     }
     
     func updateMotionData(_ motion: CMDeviceMotion) {
@@ -308,56 +292,56 @@ class SensorViewModel: ObservableObject {
     }
     
     func listenPortChanged(to port: Int) {
-        tcpServer.port = port
+        tcpServer!.port = port
         if serverStarted {
             stopTcpServer()
         }
     }
     
     func startTcpServer() {
-        tcpServer.asyncRun()
+        tcpServer!.asyncRun()
         serverStarted = true
-        addMessage("TCP server started and listen on port: \(tcpServer.port).")
+        addMessage("TCP server started and listen on port: \(tcpServer!.port).")
     }
     
     func stopTcpServer() {
-        tcpServer.shutdown()
+        tcpServer!.shutdown()
         serverStarted = false
         addMessage("TCP server closed.")
     }
     
     func makeAntitarget() {
         isAntitarget.toggle()
-        tcpServer.h16D320Ch1Handler.isAntitarget = isAntitarget
+        tcpServer!.h16D320Ch1Handler.isAntitarget = isAntitarget
     }
     
 
     // TCP client
     func connectHostChanged(to host: String) {
-        tcpClient.host = host
+        tcpClient!.host = host
         if isConnected {
-            tcpClient.stop()
+            tcpClient!.stop()
         }
     }
     
     func connectPortChanged(to port: Int) {
-        tcpClient.port = port
+        tcpClient!.port = port
     }
     
     func startConnection() {
-        tcpClient.AsyncStart()
+        tcpClient!.AsyncStart()
         addMessage("Try connect to \(connectHost):\(connectPort)")
         startAudioSess()
     }
     
     func closeConnection() {
-        tcpClient.stop()
+        tcpClient!.stop()
         isConnected = false
     }
     
     func channelNumberChanged() {
         isStereo.toggle()
-        tcpClient.h80D10ms16kHandler.audioChannels = isStereo ? 2 : 1
+        tcpClient!.h80D10ms16kHandler.audioChannels = isStereo ? 2 : 1
         addMessage(isStereo ? "Expecting 2ch sound" : "Expecting 1ch sound")
     }
     

@@ -113,9 +113,9 @@ class BluetoothCentralManager: NSObject{
     
     // Update IMU data
     private func updateIMU() {
-        if viewModel == nil { return }
         let splitedStr = incomingStr.components(separatedBy: " ")
         incomingStr = ""
+        if viewModel == nil { return }
         if var roll = Float(splitedStr[0]),
            var pitch = Float(splitedStr[1]),
            var yaw = Float(splitedStr[2]) {
@@ -224,7 +224,7 @@ extension BluetoothCentralManager: CBCentralManagerDelegate {
      *  Once the disconnection happens, we need to clean up our local copy of the peripheral
      */
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        messages.append("Perhiperal Disconnected")
+        messages.append("\(peripheral.name!) Disconnected")
         discoveredPeripheral = nil
     }
 
