@@ -10,7 +10,6 @@ import Foundation
 class RingBuffer<T> {
     var buf: Array<T>
     var capacity: Int
-    var isEmpty: Bool = true
     var count: Int = 0
     private var readIndex: Int = 0
     private var writeIndex: Int = 0
@@ -22,10 +21,7 @@ class RingBuffer<T> {
     }
     
     private func countSize() -> Int {
-        if isEmpty {
-            return 0
-        }
-        if writeIndex > readIndex {
+        if writeIndex >= readIndex {
             return writeIndex - readIndex
         } else {
             return writeIndex + capacity - readIndex
@@ -34,20 +30,18 @@ class RingBuffer<T> {
     
     func pushBack(_ newElement: T) {
         buf[writeIndex] = newElement
-        isEmpty = false
         advanceWriteIndex()
         count += 1
     }
     
     func pushBack(_ newArray: Array<T>) {
         os_unfair_lock_lock(&lock)
-        isEmpty = false
         if newArray.count <= capacity - writeIndex {
             buf.replaceSubrange(writeIndex..<(writeIndex + newArray.count), with: newArray)
             advanceWriteIndex(by: newArray.count)
         } else {
             var copyResidual = newArray.count
-            while copyResidual > capacity - writeIndex {
+            while copyResidual > 0 {
                 let bytesToCopy = min(capacity - writeIndex, copyResidual)
                 buf.replaceSubrange(writeIndex..<(writeIndex + bytesToCopy),
                                     with: newArray[(newArray.count - copyResidual)..<(newArray.count - copyResidual + bytesToCopy)])
@@ -63,9 +57,6 @@ class RingBuffer<T> {
         os_unfair_lock_lock(&lock)
         let val = buf[readIndex]
         advanceReadIndex()
-        if readIndex == writeIndex {
-            isEmpty = true
-        }
         count -= 1
         os_unfair_lock_unlock(&lock)
         return val
