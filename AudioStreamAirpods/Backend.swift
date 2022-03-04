@@ -30,6 +30,7 @@ class Backend {
             sensorVM.listenHost = ifAddress
             tcpServer.host = ifAddress
         }
+        sensorVM.tcpClient = tcpClient
         
         audioIO.tcpClient = tcpClient
         tcpClientRingBuf = RingBuffer<Int16>(repeating: 0, count: 320 * sensorVM.maxDelay)

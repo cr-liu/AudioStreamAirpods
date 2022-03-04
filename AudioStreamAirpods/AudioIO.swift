@@ -160,6 +160,13 @@ class AudioIO {
                     return
                 }
                 weakself.firstShot = false
+                
+                // try to balance the clock diff
+                if (weakself.tcpSourceRingBuf!.count > 160 * 2 * weakself.playerDelay - Int(frameCount) * 2) {
+                    print(weakself.tcpSourceRingBuf!.count)
+                    let _ = weakself.tcpSourceRingBuf!.popFront(2)
+                }
+
             } else {
                 silence.pointee = true
             }
