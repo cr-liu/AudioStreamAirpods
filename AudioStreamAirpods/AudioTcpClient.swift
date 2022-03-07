@@ -110,7 +110,8 @@ class H80D10ms16kClientHandler: H80D10ms16k, ChannelInboundHandler {
         var buffer = unwrapInboundIn(data)
 //        print(buffer.readableBytes)
         packetBuf.pushBack(buffer.readBytes(length: buffer.readableBytes)!)
-        if packetBuf.count >= packetSize {
+        let nPackets: Int = packetBuf.count / packetSize
+        for _ in 0 ..< nPackets {
             readPacket()
             ringBuf!.pushBack(stereoData)
         }
