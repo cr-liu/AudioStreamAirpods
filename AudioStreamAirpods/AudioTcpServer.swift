@@ -10,12 +10,13 @@ import NIO
 import Dispatch
 
 class AudioTcpServer {
-    var messages: [String] = []
+    weak var viewModel: SensorViewModel?
+    var isListening: Bool = false
     var host: String = "LocalHost"
     var port: Int = 12345
     // Only works on ipv4 or ipv6; if need both, create instance in the pipline!
-    let h16D320Ch1Handler = H16D320Ch1ServerHandler()
-    let h80D10ms16kHandler = H80D10ms16kServerHandler()
+    let h16D320Ch1Handler = H16D320Ch1TcpServerHandler()
+    let h80D10ms16kHandler = H80D10ms16kTcpServerHandler()
     private let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
     private var channel: Channel?
     private lazy var serverBootstrap = ServerBootstrap(group: group)
@@ -44,17 +45,29 @@ class AudioTcpServer {
         do {
             try group.syncShutdownGracefully()
         } catch let error {
-            print("Could not shutdown gracefully - forcing exit (\(error.localizedDescription))!")
+            DispatchQueue.main.async {
+                self.viewModel?.addMessage("Could not shutdown gracefully - forcing exit (\(error.localizedDescription))!")
+            }
             exit(0)
         }
     }
 
     func run()  {
         do {
+            if (h80D10ms16kHandler.viewModel == nil) {
+                h80D10ms16kHandler.viewModel = viewModel
+            }
             channel = try self.serverBootstrap.bind(host: self.host, port: self.port).wait()
+            isListening = true
+            DispatchQueue.main.async {
+                self.viewModel?.isSending = true
+                self.viewModel?.addMessage("TCP server started and listen on port: \(self.port).")
+            }
             try channel?.closeFuture.wait()
         } catch let error {
-            messages.append("Could not start TCP server! (\(error.localizedDescription))!")
+            DispatchQueue.main.async {
+                self.viewModel?.addMessage("Could not start TCP server! (\(error.localizedDescription))!")
+            }
         }
     }
     
@@ -65,7 +78,15 @@ class AudioTcpServer {
     }
     
     func shutdown() {
+        if !isListening {
+            return
+        }
         channel?.close(mode: .all, promise: nil)
+        isListening = false
+        DispatchQueue.main.async {
+            self.viewModel?.isSending = false
+            self.viewModel?.addMessage("TCP server closed.")
+        }
     }
     
     func prepareHeader() {
@@ -77,12 +98,12 @@ class AudioTcpServer {
     }
 }
 
-final class H16D320Ch1ServerHandler: H16D320Ch1, ChannelInboundHandler {
+final class H16D320Ch1TcpServerHandler: H16D320Ch1, ChannelInboundHandler {
     public typealias InboundIn = ByteBuffer
     public typealias OutboundOut = ByteBuffer
     
     static let packetSize = 336
-    var messages: [String] = []
+    weak var viewModel: SensorViewModel?
     private var packetID: Int32 = 0
     var isAntitarget: Bool = false
     private var buf: ByteBuffer = ByteBufferAllocator().buffer(capacity: packetSize)
@@ -97,8 +118,10 @@ final class H16D320Ch1ServerHandler: H16D320Ch1, ChannelInboundHandler {
         self.channelsSyncQueue.async {
             self.channels[ObjectIdentifier(channel)] = channel
             self.remoteAddresses[ObjectIdentifier(channel)] = remoteAddress.ipAddress!
-            self.messages.append(remoteAddress.ipAddress! + " connected.")
             self.hasClient = true
+        }
+        DispatchQueue.main.async {
+            self.viewModel?.addMessage(remoteAddress.ipAddress! + " connected.")
         }
     }
     
@@ -106,7 +129,7 @@ final class H16D320Ch1ServerHandler: H16D320Ch1, ChannelInboundHandler {
         let channel = context.channel
         self.channelsSyncQueue.async {
             if self.channels.removeValue(forKey: ObjectIdentifier(channel)) != nil {
-                self.messages.append(self.remoteAddresses[ObjectIdentifier(channel)]! + " disconnected.")
+                self.viewModel?.addMessage(self.remoteAddresses[ObjectIdentifier(channel)]! + " disconnected.")
                 self.remoteAddresses.removeValue(forKey: ObjectIdentifier(channel))
                 if self.channels.isEmpty {
                     self.hasClient = false
@@ -118,9 +141,13 @@ final class H16D320Ch1ServerHandler: H16D320Ch1, ChannelInboundHandler {
     public func channelRead(context: ChannelHandlerContext, data: NIOAny) {
         var read = self.unwrapInboundIn(data)
         if read.readString(length: read.readableBytes) == "AudioStreamAirpods" {
-            messages.append("Connection from iOS.")
+            DispatchQueue.main.async {
+                self.viewModel?.addMessage("Connection from iOS.")
+            }
         } else {
-            messages.append("Unexpected incoming packet, ignored.")
+            DispatchQueue.main.async {
+                self.viewModel?.addMessage("Unexpected incoming packet, ignored.")
+            }
         }
     }
     
@@ -151,7 +178,9 @@ final class H16D320Ch1ServerHandler: H16D320Ch1, ChannelInboundHandler {
     }
 
     func errorCaught(context: ChannelHandlerContext, error: Error) {
-        messages.append("error: \(error)")
+        DispatchQueue.main.async {
+            self.viewModel?.addMessage("error: \(error)")
+        }
         context.close(promise: nil)
     }
 
@@ -160,12 +189,12 @@ final class H16D320Ch1ServerHandler: H16D320Ch1, ChannelInboundHandler {
     }
 }
 
-final class H80D10ms16kServerHandler: H80D10ms16k, ChannelInboundHandler {
+final class H80D10ms16kTcpServerHandler: H80D10ms16k, ChannelInboundHandler {
     public typealias InboundIn = ByteBuffer
     public typealias OutboundOut = ByteBuffer
     
     static let sktSize = 1024 // 512 // 400
-    var messages: [String] = []
+    weak var viewModel: SensorViewModel?
     var isAntitarget: Bool = false
     private var packetID: Int32 = 0
     private var buf: ByteBuffer = ByteBufferAllocator().buffer(capacity: sktSize)
@@ -180,20 +209,22 @@ final class H80D10ms16kServerHandler: H80D10ms16k, ChannelInboundHandler {
         self.channelsSyncQueue.async {
             self.channels[ObjectIdentifier(channel)] = channel
             self.remoteAddresses[ObjectIdentifier(channel)] = remoteAddress.ipAddress!
-            self.messages.append(remoteAddress.ipAddress! + " connected.")
             self.hasClient = true
+        }
+        DispatchQueue.main.async {
+            self.viewModel?.addMessage(remoteAddress.ipAddress! + " connected.")
         }
     }
     
     public func channelInactive(context: ChannelHandlerContext) {
         let channel = context.channel
-        self.channelsSyncQueue.async {
-            if self.channels.removeValue(forKey: ObjectIdentifier(channel)) != nil {
-                self.messages.append(self.remoteAddresses[ObjectIdentifier(channel)]! + " disconnected.")
-                self.remoteAddresses.removeValue(forKey: ObjectIdentifier(channel))
-                if self.channels.isEmpty {
-                    self.hasClient = false
-                }
+        if self.channels.removeValue(forKey: ObjectIdentifier(channel)) != nil {
+            self.remoteAddresses.removeValue(forKey: ObjectIdentifier(channel))
+            if self.channels.isEmpty {
+                self.hasClient = false
+            }
+            DispatchQueue.main.async {
+                self.viewModel?.addMessage(self.remoteAddresses[ObjectIdentifier(channel)]! + " disconnected.")
             }
         }
     }
@@ -201,9 +232,13 @@ final class H80D10ms16kServerHandler: H80D10ms16k, ChannelInboundHandler {
     public func channelRead(context: ChannelHandlerContext, data: NIOAny) {
         var read = self.unwrapInboundIn(data)
         if read.readString(length: read.readableBytes) == "AudioStreamAirpods" {
-            messages.append("Connection from iOS.")
+            DispatchQueue.main.async {
+                self.viewModel?.addMessage("Connection from iOS.")
+            }
         } else {
-            messages.append("Unexpected incoming packet, ignored.")
+            DispatchQueue.main.async {
+                self.viewModel?.addMessage("Unexpected incoming packet, ignored.")
+            }
         }
     }
     
@@ -238,7 +273,9 @@ final class H80D10ms16kServerHandler: H80D10ms16k, ChannelInboundHandler {
     }
 
     func errorCaught(context: ChannelHandlerContext, error: Error) {
-        messages.append("error: \(error)")
+        DispatchQueue.main.async {
+            self.viewModel?.addMessage("error: \(error)")
+        }
         context.close(promise: nil)
     }
 

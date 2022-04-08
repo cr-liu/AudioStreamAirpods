@@ -53,6 +53,7 @@ class RingBuffer<T> {
         os_unfair_lock_unlock(&lock)
     }
     
+    @discardableResult
     func popFront() -> T {
         os_unfair_lock_lock(&lock)
         let val = buf[readIndex]
@@ -62,6 +63,7 @@ class RingBuffer<T> {
         return val
     }
     
+    @discardableResult
     func popFront(_ n: Int) -> Array<T> {
         os_unfair_lock_lock(&lock)
         let sliceIndex = capacity - readIndex

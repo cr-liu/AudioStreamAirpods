@@ -28,6 +28,8 @@
 		5A8478A4273B938400ECFCEF /* H80D10ms16k.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8478A3273B938400ECFCEF /* H80D10ms16k.swift */; };
 		5A8478A62740E3CD00ECFCEF /* RingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8478A52740E3CD00ECFCEF /* RingBuffer.swift */; };
 		5AAAFF98276ECE11007BEE1D /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 5AAAFF97276ECE11007BEE1D /* NIO */; };
+		5ADB6DBA27FC25D6001C446D /* AudioUdpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADB6DB927FC25D6001C446D /* AudioUdpServer.swift */; };
+		5ADB6DBC27FC3223001C446D /* AudioUdpClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADB6DBB27FC3223001C446D /* AudioUdpClient.swift */; };
 		5ADC885F2661B414002C4F84 /* AudioTcpClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADC885E2661B414002C4F84 /* AudioTcpClient.swift */; };
 		5AE523EF26661F1600B914A2 /* H16D320Ch1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE523EE26661F1600B914A2 /* H16D320Ch1.swift */; };
 /* End PBXBuildFile section */
@@ -55,6 +57,8 @@
 		5A70082D2668D5CB007D3DCB /* iphone11.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = iphone11.usdz; sourceTree = "<group>"; };
 		5A8478A3273B938400ECFCEF /* H80D10ms16k.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = H80D10ms16k.swift; sourceTree = "<group>"; };
 		5A8478A52740E3CD00ECFCEF /* RingBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingBuffer.swift; sourceTree = "<group>"; };
+		5ADB6DB927FC25D6001C446D /* AudioUdpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioUdpServer.swift; sourceTree = "<group>"; };
+		5ADB6DBB27FC3223001C446D /* AudioUdpClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioUdpClient.swift; sourceTree = "<group>"; };
 		5ADC885E2661B414002C4F84 /* AudioTcpClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTcpClient.swift; sourceTree = "<group>"; };
 		5AE523EE26661F1600B914A2 /* H16D320Ch1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = H16D320Ch1.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -93,14 +97,16 @@
 			children = (
 				5A3F88C9264CB03500A19E5E /* AudioStreamAirpodsApp.swift */,
 				5A47AFCD265501D6000BAD9A /* AudioTcpServer.swift */,
-				5A8478A52740E3CD00ECFCEF /* RingBuffer.swift */,
 				5ADC885E2661B414002C4F84 /* AudioTcpClient.swift */,
+				5ADB6DBB27FC3223001C446D /* AudioUdpClient.swift */,
+				5ADB6DB927FC25D6001C446D /* AudioUdpServer.swift */,
+				5A8478A52740E3CD00ECFCEF /* RingBuffer.swift */,
 				5AE523EE26661F1600B914A2 /* H16D320Ch1.swift */,
 				5A8478A3273B938400ECFCEF /* H80D10ms16k.swift */,
-				5A47AFCA265238E5000BAD9A /* SensorViewModel.swift */,
 				5A3F88DC264D090500A19E5E /* AudioIO.swift */,
 				5A23080727954D03001DCE5E /* BluetoothCentralManager.swift */,
 				5A23080B2797C06C001DCE5E /* Backend.swift */,
+				5A47AFCA265238E5000BAD9A /* SensorViewModel.swift */,
 				5A3F88CD264CB03800A19E5E /* Assets.xcassets */,
 				5A47AFCC265501A0000BAD9A /* views */,
 				5A3F88D2264CB03800A19E5E /* Info.plist */,
@@ -219,6 +225,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5A23080827954D03001DCE5E /* BluetoothCentralManager.swift in Sources */,
+				5ADB6DBC27FC3223001C446D /* AudioUdpClient.swift in Sources */,
 				5A3F88CC264CB03500A19E5E /* ContentView.swift in Sources */,
 				5A23080C2797C06C001DCE5E /* Backend.swift in Sources */,
 				5A47AFD726565420000BAD9A /* CheckBoxView.swift in Sources */,
@@ -227,6 +234,7 @@
 				5A8478A4273B938400ECFCEF /* H80D10ms16k.swift in Sources */,
 				5A3F88CA264CB03500A19E5E /* AudioStreamAirpodsApp.swift in Sources */,
 				5A47AFD526563F12000BAD9A /* SettingView.swift in Sources */,
+				5ADB6DBA27FC25D6001C446D /* AudioUdpServer.swift in Sources */,
 				5A47AFCE265501D6000BAD9A /* AudioTcpServer.swift in Sources */,
 				5A47AFD32655FFDE000BAD9A /* MessageView.swift in Sources */,
 				5ADC885F2661B414002C4F84 /* AudioTcpClient.swift in Sources */,

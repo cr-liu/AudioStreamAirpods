@@ -122,7 +122,7 @@ class BluetoothCentralManager: NSObject{
             (roll, pitch, yaw) = (roll / 180 * Float.pi, pitch / 180 * Float.pi, yaw / 180 * Float.pi)
             (viewModel!.headRoll, viewModel!.headPitch, viewModel!.headYaw)
             = (roll, pitch, yaw)
-            (viewModel!.imuData4Server[10], viewModel!.imuData4Server[11], viewModel!.imuData4Server[12])
+            (viewModel!.imuData4Sender[10], viewModel!.imuData4Sender[11], viewModel!.imuData4Sender[12])
             = (roll, pitch, yaw)
         }
     }

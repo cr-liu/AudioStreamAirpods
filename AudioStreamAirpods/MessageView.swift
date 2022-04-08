@@ -14,12 +14,12 @@ struct MessageView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(alignment: .leading) {
-                    ForEach(sensorVM.messages, id: \.self) { text in
-                        Text(text)
+                    ForEach(sensorVM.messages.indices, id: \.self) { i in
+                        Text(sensorVM.messages[i])
                             .foregroundColor(.secondary)
-                            .id(text.self)
+//                            .id(text.self)
                     }.onChange(of: sensorVM.messages.count) { _ in
-                        proxy.scrollTo(sensorVM.messages.last.self, anchor: .bottom)
+                        proxy.scrollTo(sensorVM.messages.count-1.self, anchor: .bottom)
                     }
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
             }

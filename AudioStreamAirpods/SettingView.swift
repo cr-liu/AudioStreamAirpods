@@ -47,35 +47,55 @@ struct SettingView: View {
                     })
                 Text(" packets (10ms)")
                     .foregroundColor(.secondary)
+            }
+            
+            ProgressView(value: sensorVM.bufCount, total: sensorVM.bufCapacity)
+            
+            HStack() {
+                CheckBoxView(checked: $sensorVM.dropSingleFrame)
+                    .onTapGesture {
+                        sensorVM.dropPolicyChanged()
+                    }.padding()
+                Text(" Drop data if delay > ")
+                    .foregroundColor(.secondary)
+                TextField("500", value: $sensorVM.delayThreshold, formatter: NumberFormatter())
+                    .frame(width: 50)
+                    .foregroundColor(Color(UIColor.darkGray))
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .onChange(of: sensorVM.delayThreshold, perform: { value in
+                        sensorVM.delayThresholdChanged(to: value)
+                    })
+                Text(" ms")
+                    .foregroundColor(.secondary)
                 
             }.padding(.bottom, 40)
             
             HStack(alignment: .bottom) {
                 VStack(alignment: .leading) {
-                    Text("Connect to: ")
+                    Text("Remote IP: ")
                         .foregroundColor(.secondary)
-                    TextField("192.168.1.0", text: $sensorVM.connectHost)
+                    TextField("192.168.1.0", text: $sensorVM.remoteHost)
                         .foregroundColor(Color(UIColor.darkGray))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onChange(of: sensorVM.connectHost, perform: { value in
-                            sensorVM.connectHostChanged(to: value)
+                        .onChange(of: sensorVM.remoteHost, perform: { value in
+                            sensorVM.remoteHostChanged(to: value)
                         })
                 }
                 VStack(alignment: .leading) {
                     Text("Port: ")
                         .foregroundColor(.secondary)
-                    TextField("12345", value: $sensorVM.connectPort, formatter: NumberFormatter())
+                    TextField("12345", value: $sensorVM.remotePort, formatter: NumberFormatter())
                         .foregroundColor(Color(UIColor.darkGray))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onChange(of: sensorVM.connectPort, perform: { value in
-                            sensorVM.connectPortChanged(to: value)
+                        .onChange(of: sensorVM.remotePort, perform: { value in
+                            sensorVM.remotePortChanged(to: value)
                         })
                 }
-            }.padding(.bottom, 30)
+            }.padding(.bottom, 10)
         
             HStack(alignment: .bottom) {
                 VStack(alignment: .leading) {
-                    Text("Server name: ")
+                    Text("Local IP: ")
                         .foregroundColor(.secondary)
                     TextField("LocalAudioHost", text: $sensorVM.listenHost)
                         .foregroundColor(Color(UIColor.darkGray))
@@ -89,11 +109,20 @@ struct SettingView: View {
                         .foregroundColor(Color(UIColor.darkGray))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .onChange(of: sensorVM.listenPort, perform: { value in
-                            sensorVM.listenPortChanged(to: value)
+                            sensorVM.sendingPortChanged(to: value)
                         })
                 }
-
+            }.padding(.bottom, 10)
+                
+            Toggle(isOn: $sensorVM.usingUdp) {
+                Text(sensorVM.usingUdp ? "UDP" : "TCP")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+            }.onChange(of: sensorVM.usingUdp) { _ in
+                sensorVM.changeSktType()
             }
+            
+            
         }.padding()
     }
 }

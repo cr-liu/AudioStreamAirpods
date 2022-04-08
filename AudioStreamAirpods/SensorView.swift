@@ -59,27 +59,27 @@ struct SensorView: View {
             }
             
             HStack {
-                Image(systemName: "externaldrive.badge.wifi")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 60, height: 60)
-                    .foregroundColor(sensorVM.serverStarted ?
-                                        .accentColor : .secondary)
-                    .onLongPressGesture {
-                        sensorVM.serverStarted ?
-                            sensorVM.stopTcpServer() :
-                            sensorVM.startTcpServer()
-                    }
-                Spacer()
-                Image(systemName: "link")
+                Image(systemName: "icloud.and.arrow.up")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 45, height: 45)
-                    .foregroundColor(sensorVM.isConnected ? .accentColor : .secondary)
+                    .foregroundColor(sensorVM.isSending ?
+                                        .accentColor : .secondary)
                     .onLongPressGesture {
-                        sensorVM.isConnected ?
-                            sensorVM.closeConnection() :
-                            sensorVM.startConnection()
+                        sensorVM.isSending ?
+                            sensorVM.stopSender() :
+                            sensorVM.startSender()
+                    }
+                Spacer()
+                Image(systemName: "iphone.and.arrow.forward")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 45, height: 45)
+                    .foregroundColor(sensorVM.isReceiving ? .accentColor : .secondary)
+                    .onLongPressGesture {
+                        sensorVM.isReceiving ?
+                            sensorVM.stopReceiver() :
+                            sensorVM.startReceiver()
                     }
                 Spacer()
                 Button(action: {

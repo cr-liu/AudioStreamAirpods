@@ -1,29 +1,27 @@
 //
-//  AudioTcpClient.swift
+//  AudioUdpServer.swift
 //  AudioStreamAirpods
 //
-//  Created by liu on 2021/05/29.
+//  Created by liu on 2022/04/05.
 //
 
 import Foundation
-import Accelerate
 import NIO
 
-class AudioTcpClient {
+class AudioUdpServer {
     weak var viewModel: SensorViewModel?
-    var isConnected: Bool = false
+    var isReceiving: Bool = false
     var packetBuf: RingBuffer<UInt8>?
-    var h16D320Handler = H16D320Ch1ClientHandler()
-    var h80D10ms16kHandler = H80D10ms16kTcpClientHandler()
-    var host: String = "192.168.1.10"
+    var h80D10ms16kHandler = H80D10ms16kUdpServerHandler()
+    var host: String = "0.0.0.0"
     var port: Int = 12345
     private let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
     private var channel: Channel?
-    private lazy var clientBootstrap = ClientBootstrap(group: group)
-        .channelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
-        .channelOption(ChannelOptions.socket(IPPROTO_TCP, TCP_NODELAY), value: 1)
+    private lazy var serverBootstrap = DatagramBootstrap(group: group)
+        .channelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR),
+                       value: 1)
         .channelOption(ChannelOptions.recvAllocator,
-                       value: AdaptiveRecvByteBufferAllocator())
+                       value: FixedSizeRecvByteBufferAllocator(capacity: 2048))
         .channelInitializer { channel in
             channel.pipeline.addHandler(self.h80D10ms16kHandler)
         }
@@ -45,16 +43,19 @@ class AudioTcpClient {
     
     func start() {
         do {
-            channel = try clientBootstrap.connect(host: self.host, port: self.port).wait()
-            isConnected = true
+            if h80D10ms16kHandler.viewModel == nil {
+                h80D10ms16kHandler.viewModel = viewModel
+            }
+            channel = try serverBootstrap.bind(to: .init(ipAddress: host, port: port)).wait()
+            isReceiving = true
             DispatchQueue.main.async {
                 self.viewModel?.isReceiving = true
-                self.viewModel?.addMessage("Connected to \(self.host):\(self.port).")
+                self.viewModel?.addMessage("UDP server started and listen on port: \(self.port).")
             }
             try channel?.closeFuture.wait()
         } catch let error {
             DispatchQueue.main.async {
-                self.viewModel?.addMessage("Failed to connect! (\(error.localizedDescription)")
+                self.viewModel?.addMessage("Failed to start UDP server! (\(error.localizedDescription)")
             }
         }
     }
@@ -66,60 +67,35 @@ class AudioTcpClient {
     }
     
     func stop() {
-        if !isConnected {
+        if !isReceiving {
             return
         }
         channel?.close(mode: .all, promise: nil)
-        isConnected = false
+        isReceiving = false
         DispatchQueue.main.async {
             self.viewModel?.isReceiving = false
-            self.viewModel?.addMessage("Disconnected from \(self.host):\(self.port).")
+            self.viewModel?.addMessage("UDP receiver closed.")
         }
     }
 }
 
+final class H80D10ms16kUdpServerHandler: H80D10ms16k, ChannelInboundHandler {
+    typealias InboundIn = AddressedEnvelope<ByteBuffer>
+    typealias OutboundOut = AddressedEnvelope<ByteBuffer>
 
-class H16D320Ch1ClientHandler: H16D320Ch1, ChannelInboundHandler {
-    typealias InboundIn = ByteBuffer
-    typealias OutboundOut = ByteBuffer
-    
-    func channelActive(context: ChannelHandlerContext) {
-        let message = "AudioStreamAirpods"
-        var buffer = context.channel.allocator.buffer(capacity: message.utf8.count)
-        buffer.writeString(message)
-        context.writeAndFlush(wrapOutboundOut(buffer), promise: nil)
-    }
-    
-    func channelRead(context: ChannelHandlerContext, data: NIOAny) {
-        var buffer = unwrapInboundIn(data)
-        let ptr = buffer.withUnsafeMutableReadableBytes{ $0 }.baseAddress!
-        readH16D320Ch1(from: ptr)
-    }
-    
-    func errorCaught(context: ChannelHandlerContext, error: Error) {
-        print("error: \(error.localizedDescription)")
-        context.close(promise: nil)
-    }
-}
-
-
-class H80D10ms16kTcpClientHandler: H80D10ms16k, ChannelInboundHandler {
-    typealias InboundIn = ByteBuffer
-    typealias OutboundOut = ByteBuffer
-
+    weak var viewModel: SensorViewModel?
     private let packetSize = 1024 // 512 // 400
     lazy var packetBuf = RingBuffer<UInt8>(repeating: 0, count: packetSize * 60)
     weak var ringBuf: RingBuffer<Int16>?
     
-    func channelActive(context: ChannelHandlerContext) {
-        let message = "AudioStreamAirpods"
-        var buffer = context.channel.allocator.buffer(capacity: message.utf8.count)
-        buffer.writeString(message)
-        context.writeAndFlush(wrapOutboundOut(buffer), promise: nil)
-    }
+//    public func channelActive(context: ChannelHandlerContext) {
+//        DispatchQueue.main.async {
+//            self.viewModel?.addMessage("Start receiving..")
+//        }
+//    }
     
     func channelRead(context: ChannelHandlerContext, data: NIOAny) {
-        var buffer = unwrapInboundIn(data)
+        var buffer = unwrapInboundIn(data).data
 //        print(buffer.readableBytes)
         packetBuf.pushBack(buffer.readBytes(length: buffer.readableBytes)!)
         let nPackets: Int = packetBuf.count / packetSize

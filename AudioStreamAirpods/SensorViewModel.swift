@@ -9,16 +9,21 @@ import Foundation
 import CoreMotion
 import AVFoundation
 import CoreBluetooth
+import NIO
 
 class SensorViewModel: ObservableObject {
     @Published var messages: [String] = []
     
-    var maxDelay = 60
+    var maxDelay = 100
     @Published var playerDelay: Int = 1
     @Published var isPlayingEcho: Bool = false
     @Published var isPlaying : Bool = false
     @Published var isRecording: Bool = false
     @Published var speakerType: String = ""
+    @Published var bufCapacity: Float32 = 320 * 100 // change with maxDelay
+    @Published var bufCount: Float32 = 0
+    @Published var delayThreshold: Int = 500
+    @Published var dropSingleFrame: Bool = false
     weak var audioIO: AudioIO?
     
     @Published var headPitch: Float = 0
@@ -37,12 +42,14 @@ class SensorViewModel: ObservableObject {
 //    private var isUpdatingMotion: Bool = false
 //    private var motionManager = CMMotionManager()
     
+    @Published var usingUdp: Bool = true
     @Published var listenHost: String = "LocalHost"
     @Published var listenPort: Int = 12345
-    @Published var serverStarted: Bool = false
+    @Published var isSending: Bool = false
     @Published var isAntitarget: Bool = false
     weak var tcpServer: AudioTcpServer?
-    var imuData4Server = Array<Float32>(repeating: -10000, count: 16)
+    weak var udpClient: AudioUdpClient?
+    var imuData4Sender = Array<Float32>(repeating: -10000, count: 16)
     //    var phoneRoll: Float32 = -10000
     //    var phonePitch: Float32 = -10000
     //    var phoneYaw: Float32 = -10000
@@ -60,11 +67,12 @@ class SensorViewModel: ObservableObject {
     //    var headAccY: Float32 = -10000
     //    var headAccZ: Float32 = -10000
     
-    @Published var connectHost: String = "192.168.1.10"
-    @Published var connectPort: Int = 12345
-    @Published var isConnected: Bool = false
+    @Published var remoteHost: String = "192.168.1.10"
+    @Published var remotePort: Int = 12345
+    @Published var isReceiving: Bool = false
     @Published var isStereo: Bool = true
     weak var tcpClient: AudioTcpClient?
+    weak var udpServer: AudioUdpServer?
     
     @Published var bluetoothPeripherals = Set<CBPeripheral>()
     weak var bluetoothLEManager: BluetoothCentralManager?
@@ -75,7 +83,7 @@ class SensorViewModel: ObservableObject {
     }
     
     deinit {
-        if serverStarted { stopTcpServer() }
+        if isSending { stopSender() }
         if isRecording { stopAudioSess() }
     }
     
@@ -96,9 +104,10 @@ class SensorViewModel: ObservableObject {
 
     // Message
     func addMessage(_ msg: String) {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm:ss.SSS"
-        self.messages.append(msg + " -- " + dateFormatter.string(from: Date()))
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "HH:mm:ss.SSS"
+//        self.messages.append(msg + " -- " + dateFormatter.string(from: Date()))
+        self.messages.append(msg)
     }
     
     func collectMessage() {
@@ -108,36 +117,11 @@ class SensorViewModel: ObservableObject {
             }
             audioIO!.messages.removeAll()
         }
-        if tcpServer != nil && !(tcpServer!.messages.isEmpty) {
-            for msg in tcpServer!.messages {
-                addMessage(msg)
-            }
-            tcpServer!.messages.removeAll()
-        }
-//        if tcpServer != nil && !(tcpServer!.h16D320Ch1Handler.messages.isEmpty) {
-//            for msg in tcpServer!.h16D320Ch1Handler.messages {
-//                addMessage(msg)
-//            }
-//            tcpServer!.h16D320Ch1Handler.messages.removeAll()
-//        }
-        if tcpServer != nil && !(tcpServer!.h80D10ms16kHandler.messages.isEmpty) {
-            for msg in tcpServer!.h80D10ms16kHandler.messages {
-                addMessage(msg)
-            }
-            tcpServer!.h80D10ms16kHandler.messages.removeAll()
-        }
-        if tcpServer != nil && listenHost == "LocalHost" {
+        if tcpServer != nil {
             if let ifAddress = getIPAddress() {
                 listenHost = ifAddress
                 tcpServer!.host = ifAddress
             }
-        }
-        if tcpClient != nil && !tcpClient!.messages.isEmpty {
-            for msg in tcpClient!.messages {
-                addMessage(msg)
-            }
-            tcpClient!.messages.removeAll()
-            isConnected = tcpClient!.isConnected
         }
         if bluetoothLEManager != nil && !(bluetoothLEManager!.messages.isEmpty) {
             for msg in bluetoothLEManager!.messages {
@@ -145,8 +129,10 @@ class SensorViewModel: ObservableObject {
             }
             bluetoothLEManager!.messages.removeAll()
         }
+        if audioIO != nil {
+            bufCount = Float32(audioIO!.recvRingBuf!.count)
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: collectMessage)
-//        print("test...")
     }
     
     
@@ -180,7 +166,7 @@ class SensorViewModel: ObservableObject {
     
     func playTcpSource() {
         isPlaying.toggle()
-        audioIO!.playTcpSource(isPlaying)
+        audioIO!.playRemoteSource(isPlaying)
     }
     
     func playEcho() {
@@ -198,6 +184,14 @@ class SensorViewModel: ObservableObject {
         }
     }
     
+    func delayThresholdChanged(to newThreshold: Int) {
+        audioIO?.delayThreshold = newThreshold / 10
+    }
+    
+    func dropPolicyChanged() {
+        dropSingleFrame.toggle()
+        audioIO?.dropOne = dropSingleFrame
+    }
 
     // Headset IMU
     func checkIMU() {
@@ -248,9 +242,9 @@ class SensorViewModel: ObservableObject {
         DispatchQueue.main.async {
             (self.headPitch, self.headYaw, self.headRoll)
             = (-Float(attitude.pitch), Float(attitude.yaw), Float(-attitude.roll))
-            (self.imuData4Server[10], self.imuData4Server[11], self.imuData4Server[12])
+            (self.imuData4Sender[10], self.imuData4Sender[11], self.imuData4Sender[12])
             = (Float32(attitude.roll), Float32(attitude.pitch), Float32(attitude.yaw))
-            (self.imuData4Server[13], self.imuData4Server[14], self.imuData4Server[15])
+            (self.imuData4Sender[13], self.imuData4Sender[14], self.imuData4Sender[15])
             = (Float32(acceleration.x), Float32(acceleration.y), Float32(acceleration.z))
         }
     }
@@ -258,90 +252,98 @@ class SensorViewModel: ObservableObject {
 
     // Phone IMU
     
+    // Socket type
+    func changeSktType() {
+        audioIO?.usingUdp = usingUdp
+        stopSender()
+        stopReceiver()
+    }
 
-
-    // TCP server
+    
     func getIPAddress() -> String? {
         var address: String?
-        var ifaddr: UnsafeMutablePointer<ifaddrs>? = nil
-        if getifaddrs(&ifaddr) == 0 {
-            var ptr = ifaddr
-            while ptr != nil {
-                defer { ptr = ptr?.pointee.ifa_next }
-
-                guard let interface = ptr?.pointee else { return nil }
-                let addrFamily = interface.ifa_addr.pointee.sa_family
-                if addrFamily == UInt8(AF_INET) || addrFamily == UInt8(AF_INET6) {
-
-                    // wifi = ["en0"]
-                    // wired = ["en2", "en3", "en4"]
-                    // cellular = ["pdp_ip0","pdp_ip1","pdp_ip2","pdp_ip3"]
-
-                    let name: String = String(cString: (interface.ifa_name))
-                    if  name == "en0" {
-                        var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
-                        getnameinfo(interface.ifa_addr, socklen_t((interface.ifa_addr.pointee.sa_len)),
-                                    &hostname, socklen_t(hostname.count), nil, socklen_t(0), NI_NUMERICHOST)
-                        address = String(cString: hostname)
-                    }
-                }
+        
+        do {
+            let matchingInterfaces = try System.enumerateDevices().filter {
+                // find an IPv4 interface named en0 that has a broadcast address.
+                // wifi = ["en0"]
+                // wired = ["en2", "en3", "en4"]
+                // cellular = ["pdp_ip0","pdp_ip1","pdp_ip2","pdp_ip3"]
+                $0.name == "en0" && $0.broadcastAddress != nil
             }
-            freeifaddrs(ifaddr)
+            address = matchingInterfaces.first?.address?.ipAddress
+        } catch {
+            self.addMessage("No suitable net interface found")
         }
+
         return address
     }
     
-    func listenPortChanged(to port: Int) {
-        tcpServer!.port = port
-        if serverStarted {
-            stopTcpServer()
+    // Socket sender
+    func sendingPortChanged(to port: Int) {
+        tcpServer?.port = port
+        udpClient?.port = port
+        if isSending {
+            stopSender()
         }
     }
     
-    func startTcpServer() {
-        tcpServer!.asyncRun()
-        serverStarted = true
-        addMessage("TCP server started and listen on port: \(tcpServer!.port).")
+    func startSender() {
+        if usingUdp {
+            udpClient?.asyncRun()
+        } else {
+            tcpServer?.asyncRun()
+        }
     }
     
-    func stopTcpServer() {
-        tcpServer!.shutdown()
-        serverStarted = false
-        addMessage("TCP server closed.")
+    func stopSender() {
+        udpClient?.shutdown()
+        tcpServer?.shutdown()
     }
     
     func makeAntitarget() {
         isAntitarget.toggle()
-        tcpServer!.h16D320Ch1Handler.isAntitarget = isAntitarget
+        tcpServer?.h80D10ms16kHandler.isAntitarget = isAntitarget
+        udpClient?.h80D10ms16kHandler.isAntitarget = isAntitarget
     }
     
 
-    // TCP client
-    func connectHostChanged(to host: String) {
-        tcpClient!.host = host
-        if isConnected {
-            tcpClient!.stop()
+    // Socket receiver
+    func remoteHostChanged(to host: String) {
+        tcpClient?.host = host
+//        udpServer?.host = host
+        if isReceiving {
+            stopReceiver()
         }
     }
     
-    func connectPortChanged(to port: Int) {
-        tcpClient!.port = port
+    func remotePortChanged(to port: Int) {
+        tcpClient?.port = port
+        udpServer?.port = port
+        if isReceiving {
+            stopReceiver()
+        }
     }
     
-    func startConnection() {
-        tcpClient!.AsyncStart()
-        addMessage("Try connect to \(connectHost):\(connectPort)")
+    func startReceiver() {
+        if usingUdp {
+            udpServer?.AsyncStart()
+        } else {
+            tcpClient?.AsyncStart()
+            addMessage("Try connect to \(remoteHost):\(remotePort)")
+        }
         startAudioSess()
     }
     
-    func closeConnection() {
-        tcpClient!.stop()
-        isConnected = false
+    func stopReceiver() {
+        udpServer?.stop()
+        tcpClient?.stop()
     }
     
     func channelNumberChanged() {
         isStereo.toggle()
-        tcpClient!.h80D10ms16kHandler.audioChannels = isStereo ? 2 : 1
+        tcpClient?.h80D10ms16kHandler.audioChannels = isStereo ? 2 : 1
+        udpServer?.h80D10ms16kHandler.audioChannels = isStereo ? 2 : 1
         addMessage(isStereo ? "Expecting 2ch sound" : "Expecting 1ch sound")
     }
     
