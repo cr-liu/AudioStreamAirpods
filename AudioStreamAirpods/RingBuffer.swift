@@ -84,6 +84,7 @@ class RingBuffer<T> {
         os_unfair_lock_lock(&lock)
         readIndex = 0
         writeIndex = 0
+        count = 0
         os_unfair_lock_unlock(&lock)
     }
     

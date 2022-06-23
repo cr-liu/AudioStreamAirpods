@@ -58,7 +58,7 @@ struct SettingView: View {
                     }.padding()
                 Text(" Drop data if delay > ")
                     .foregroundColor(.secondary)
-                TextField("500", value: $sensorVM.delayThreshold, formatter: NumberFormatter())
+                TextField("50", value: $sensorVM.delayThreshold, formatter: NumberFormatter())
                     .frame(width: 50)
                     .foregroundColor(Color(UIColor.darkGray))
                     .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -74,7 +74,7 @@ struct SettingView: View {
                 VStack(alignment: .leading) {
                     Text("Remote IP: ")
                         .foregroundColor(.secondary)
-                    TextField("192.168.1.0", text: $sensorVM.remoteHost)
+                    TextField("192.168.2.103", text: $sensorVM.remoteHost)
                         .foregroundColor(Color(UIColor.darkGray))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .onChange(of: sensorVM.remoteHost, perform: { value in

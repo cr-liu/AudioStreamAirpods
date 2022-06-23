@@ -22,7 +22,7 @@ class SensorViewModel: ObservableObject {
     @Published var speakerType: String = ""
     @Published var bufCapacity: Float32 = 320 * 100 // change with maxDelay
     @Published var bufCount: Float32 = 0
-    @Published var delayThreshold: Int = 500
+    @Published var delayThreshold: Int = 50
     @Published var dropSingleFrame: Bool = false
     weak var audioIO: AudioIO?
     
@@ -42,7 +42,7 @@ class SensorViewModel: ObservableObject {
 //    private var isUpdatingMotion: Bool = false
 //    private var motionManager = CMMotionManager()
     
-    @Published var usingUdp: Bool = true
+    @Published var usingUdp: Bool = false
     @Published var listenHost: String = "LocalHost"
     @Published var listenPort: Int = 12345
     @Published var isSending: Bool = false
@@ -67,7 +67,7 @@ class SensorViewModel: ObservableObject {
     //    var headAccY: Float32 = -10000
     //    var headAccZ: Float32 = -10000
     
-    @Published var remoteHost: String = "192.168.1.10"
+    @Published var remoteHost: String = "192.168.2.103"
     @Published var remotePort: Int = 12345
     @Published var isReceiving: Bool = false
     @Published var isStereo: Bool = true
@@ -330,7 +330,6 @@ class SensorViewModel: ObservableObject {
             udpServer?.AsyncStart()
         } else {
             tcpClient?.AsyncStart()
-            addMessage("Try connect to \(remoteHost):\(remotePort)")
         }
         startAudioSess()
     }

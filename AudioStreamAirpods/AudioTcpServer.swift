@@ -13,9 +13,8 @@ class AudioTcpServer {
     weak var viewModel: SensorViewModel?
     var isListening: Bool = false
     var host: String = "LocalHost"
-    var port: Int = 12345
+    var port: Int = 0
     // Only works on ipv4 or ipv6; if need both, create instance in the pipline!
-    let h16D320Ch1Handler = H16D320Ch1TcpServerHandler()
     let h80D10ms16kHandler = H80D10ms16kTcpServerHandler()
     private let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
     private var channel: Channel?
@@ -54,9 +53,6 @@ class AudioTcpServer {
 
     func run()  {
         do {
-            if (h80D10ms16kHandler.viewModel == nil) {
-                h80D10ms16kHandler.viewModel = viewModel
-            }
             channel = try self.serverBootstrap.bind(host: self.host, port: self.port).wait()
             isListening = true
             DispatchQueue.main.async {
@@ -82,6 +78,7 @@ class AudioTcpServer {
             return
         }
         channel?.close(mode: .all, promise: nil)
+        h80D10ms16kHandler.closeAll()
         isListening = false
         DispatchQueue.main.async {
             self.viewModel?.isSending = false
@@ -98,96 +95,6 @@ class AudioTcpServer {
     }
 }
 
-final class H16D320Ch1TcpServerHandler: H16D320Ch1, ChannelInboundHandler {
-    public typealias InboundIn = ByteBuffer
-    public typealias OutboundOut = ByteBuffer
-    
-    static let packetSize = 336
-    weak var viewModel: SensorViewModel?
-    private var packetID: Int32 = 0
-    var isAntitarget: Bool = false
-    private var buf: ByteBuffer = ByteBufferAllocator().buffer(capacity: packetSize)
-    private let channelsSyncQueue = DispatchQueue(label: "tcpQueue", qos: .userInitiated)
-    private var channels: [ObjectIdentifier: Channel] = [:]
-    private var remoteAddresses: [ObjectIdentifier: String] = [:]
-    private var hasClient: Bool = false
-    
-    public func channelActive(context: ChannelHandlerContext) {
-        let remoteAddress = context.remoteAddress!
-        let channel = context.channel
-        self.channelsSyncQueue.async {
-            self.channels[ObjectIdentifier(channel)] = channel
-            self.remoteAddresses[ObjectIdentifier(channel)] = remoteAddress.ipAddress!
-            self.hasClient = true
-        }
-        DispatchQueue.main.async {
-            self.viewModel?.addMessage(remoteAddress.ipAddress! + " connected.")
-        }
-    }
-    
-    public func channelInactive(context: ChannelHandlerContext) {
-        let channel = context.channel
-        self.channelsSyncQueue.async {
-            if self.channels.removeValue(forKey: ObjectIdentifier(channel)) != nil {
-                self.viewModel?.addMessage(self.remoteAddresses[ObjectIdentifier(channel)]! + " disconnected.")
-                self.remoteAddresses.removeValue(forKey: ObjectIdentifier(channel))
-                if self.channels.isEmpty {
-                    self.hasClient = false
-                }
-            }
-        }
-    }
-    
-    public func channelRead(context: ChannelHandlerContext, data: NIOAny) {
-        var read = self.unwrapInboundIn(data)
-        if read.readString(length: read.readableBytes) == "AudioStreamAirpods" {
-            DispatchQueue.main.async {
-                self.viewModel?.addMessage("Connection from iOS.")
-            }
-        } else {
-            DispatchQueue.main.async {
-                self.viewModel?.addMessage("Unexpected incoming packet, ignored.")
-            }
-        }
-    }
-    
-    func preparePktHeader() {
-        self.channelsSyncQueue.async {
-            let unixtimeDouble: Double = Date().timeIntervalSince1970
-            let unixtime: Int32 = Int32(floor(unixtimeDouble))
-            let milisec: Int16 = Int16((unixtimeDouble - Double(unixtime)) * 1000)
-            self.sktHeader = H16D320Ch1Header(unixTime: unixtime, ms: milisec, pktID: self.packetID, humanID: 0,
-                                                 isAntitarget: self.isAntitarget ? -1 : 1, speechActivity: 0)
-            self.packetID += 1
-        }
-    }
-    
-    func prepareBuf(_ dataArray: ContiguousArray<Int16>) {
-        buf.moveWriterIndex(to: 0)
-        let rawPtr = buf.withUnsafeMutableWritableBytes{ $0 }.baseAddress!
-        writeH16D320Ch1(to: rawPtr, dataArray: dataArray)
-        buf.moveWriterIndex(to: 336)
-    }
-    
-    func cmdFromServer(send dataArray: ContiguousArray<Int16>) {
-        if !hasClient { return }
-        self.channelsSyncQueue.async {
-            self.prepareBuf(dataArray)
-            self.writeToAll(channels: self.channels, buffer: self.buf)
-        }
-    }
-
-    func errorCaught(context: ChannelHandlerContext, error: Error) {
-        DispatchQueue.main.async {
-            self.viewModel?.addMessage("error: \(error)")
-        }
-        context.close(promise: nil)
-    }
-
-    private func writeToAll(channels: [ObjectIdentifier: Channel], buffer: ByteBuffer) {
-        channels.forEach { $0.value.writeAndFlush(buffer, promise: nil) }
-    }
-}
 
 final class H80D10ms16kTcpServerHandler: H80D10ms16k, ChannelInboundHandler {
     public typealias InboundIn = ByteBuffer
@@ -218,13 +125,15 @@ final class H80D10ms16kTcpServerHandler: H80D10ms16k, ChannelInboundHandler {
     
     public func channelInactive(context: ChannelHandlerContext) {
         let channel = context.channel
+        context.close(mode: .all, promise: nil)
         if self.channels.removeValue(forKey: ObjectIdentifier(channel)) != nil {
+            let remoteAddress: String = self.remoteAddresses[ObjectIdentifier(channel)]!
+            DispatchQueue.main.async {
+                self.viewModel?.addMessage(remoteAddress + " disconnected.")
+            }
             self.remoteAddresses.removeValue(forKey: ObjectIdentifier(channel))
             if self.channels.isEmpty {
                 self.hasClient = false
-            }
-            DispatchQueue.main.async {
-                self.viewModel?.addMessage(self.remoteAddresses[ObjectIdentifier(channel)]! + " disconnected.")
             }
         }
     }
@@ -281,5 +190,10 @@ final class H80D10ms16kTcpServerHandler: H80D10ms16k, ChannelInboundHandler {
 
     private func writeToAll(channels: [ObjectIdentifier: Channel], buffer: ByteBuffer) {
         channels.forEach { $0.value.writeAndFlush(buffer, promise: nil) }
+    }
+    
+    fileprivate func closeAll() {
+        self.channels.forEach { $0.value.close(mode: .all, promise: nil) }
+        self.hasClient = false
     }
 }

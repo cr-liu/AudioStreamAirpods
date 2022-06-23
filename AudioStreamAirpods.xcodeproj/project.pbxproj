@@ -31,7 +31,6 @@
 		5ADB6DBA27FC25D6001C446D /* AudioUdpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADB6DB927FC25D6001C446D /* AudioUdpServer.swift */; };
 		5ADB6DBC27FC3223001C446D /* AudioUdpClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADB6DBB27FC3223001C446D /* AudioUdpClient.swift */; };
 		5ADC885F2661B414002C4F84 /* AudioTcpClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADC885E2661B414002C4F84 /* AudioTcpClient.swift */; };
-		5AE523EF26661F1600B914A2 /* H16D320Ch1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE523EE26661F1600B914A2 /* H16D320Ch1.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,7 +59,6 @@
 		5ADB6DB927FC25D6001C446D /* AudioUdpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioUdpServer.swift; sourceTree = "<group>"; };
 		5ADB6DBB27FC3223001C446D /* AudioUdpClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioUdpClient.swift; sourceTree = "<group>"; };
 		5ADC885E2661B414002C4F84 /* AudioTcpClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTcpClient.swift; sourceTree = "<group>"; };
-		5AE523EE26661F1600B914A2 /* H16D320Ch1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = H16D320Ch1.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,7 +99,6 @@
 				5ADB6DBB27FC3223001C446D /* AudioUdpClient.swift */,
 				5ADB6DB927FC25D6001C446D /* AudioUdpServer.swift */,
 				5A8478A52740E3CD00ECFCEF /* RingBuffer.swift */,
-				5AE523EE26661F1600B914A2 /* H16D320Ch1.swift */,
 				5A8478A3273B938400ECFCEF /* H80D10ms16k.swift */,
 				5A3F88DC264D090500A19E5E /* AudioIO.swift */,
 				5A23080727954D03001DCE5E /* BluetoothCentralManager.swift */,
@@ -230,7 +227,6 @@
 				5A23080C2797C06C001DCE5E /* Backend.swift in Sources */,
 				5A47AFD726565420000BAD9A /* CheckBoxView.swift in Sources */,
 				5A3F88DF264E3B9100A19E5E /* MotionSceneView.swift in Sources */,
-				5AE523EF26661F1600B914A2 /* H16D320Ch1.swift in Sources */,
 				5A8478A4273B938400ECFCEF /* H80D10ms16k.swift in Sources */,
 				5A3F88CA264CB03500A19E5E /* AudioStreamAirpodsApp.swift in Sources */,
 				5A47AFD526563F12000BAD9A /* SettingView.swift in Sources */,

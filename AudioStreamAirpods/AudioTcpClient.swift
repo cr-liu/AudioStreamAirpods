@@ -13,10 +13,9 @@ class AudioTcpClient {
     weak var viewModel: SensorViewModel?
     var isConnected: Bool = false
     var packetBuf: RingBuffer<UInt8>?
-    var h16D320Handler = H16D320Ch1ClientHandler()
     var h80D10ms16kHandler = H80D10ms16kTcpClientHandler()
-    var host: String = "192.168.1.10"
-    var port: Int = 12345
+    var host: String = ""
+    var port: Int = 0
     private let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
     private var channel: Channel?
     private lazy var clientBootstrap = ClientBootstrap(group: group)
@@ -45,13 +44,16 @@ class AudioTcpClient {
     
     func start() {
         do {
+            DispatchQueue.main.async {
+                self.viewModel?.addMessage("Try connect to \(self.host):\(self.port)")
+            }
             channel = try clientBootstrap.connect(host: self.host, port: self.port).wait()
             isConnected = true
             DispatchQueue.main.async {
                 self.viewModel?.isReceiving = true
                 self.viewModel?.addMessage("Connected to \(self.host):\(self.port).")
             }
-            try channel?.closeFuture.wait()
+//            try channel?.closeFuture.wait()
         } catch let error {
             DispatchQueue.main.async {
                 self.viewModel?.addMessage("Failed to connect! (\(error.localizedDescription)")
@@ -79,30 +81,6 @@ class AudioTcpClient {
 }
 
 
-class H16D320Ch1ClientHandler: H16D320Ch1, ChannelInboundHandler {
-    typealias InboundIn = ByteBuffer
-    typealias OutboundOut = ByteBuffer
-    
-    func channelActive(context: ChannelHandlerContext) {
-        let message = "AudioStreamAirpods"
-        var buffer = context.channel.allocator.buffer(capacity: message.utf8.count)
-        buffer.writeString(message)
-        context.writeAndFlush(wrapOutboundOut(buffer), promise: nil)
-    }
-    
-    func channelRead(context: ChannelHandlerContext, data: NIOAny) {
-        var buffer = unwrapInboundIn(data)
-        let ptr = buffer.withUnsafeMutableReadableBytes{ $0 }.baseAddress!
-        readH16D320Ch1(from: ptr)
-    }
-    
-    func errorCaught(context: ChannelHandlerContext, error: Error) {
-        print("error: \(error.localizedDescription)")
-        context.close(promise: nil)
-    }
-}
-
-
 class H80D10ms16kTcpClientHandler: H80D10ms16k, ChannelInboundHandler {
     typealias InboundIn = ByteBuffer
     typealias OutboundOut = ByteBuffer
@@ -110,12 +88,21 @@ class H80D10ms16kTcpClientHandler: H80D10ms16k, ChannelInboundHandler {
     private let packetSize = 1024 // 512 // 400
     lazy var packetBuf = RingBuffer<UInt8>(repeating: 0, count: packetSize * 60)
     weak var ringBuf: RingBuffer<Int16>?
+    weak var viewModel: SensorViewModel?
     
     func channelActive(context: ChannelHandlerContext) {
         let message = "AudioStreamAirpods"
         var buffer = context.channel.allocator.buffer(capacity: message.utf8.count)
         buffer.writeString(message)
         context.writeAndFlush(wrapOutboundOut(buffer), promise: nil)
+    }
+    
+    public func channelInactive(context: ChannelHandlerContext) {
+        context.close(mode: .all, promise: nil)
+        DispatchQueue.main.async {
+            self.viewModel?.isReceiving = false
+            self.viewModel?.addMessage("Connection closed by server.")
+        }
     }
     
     func channelRead(context: ChannelHandlerContext, data: NIOAny) {

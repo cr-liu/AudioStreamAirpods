@@ -37,9 +37,9 @@ class H80D10ms16k {
         movingPtr += MemoryLayout<Int32>.size
         UnsafeMutablePointer<Int32>(movingPtr.assumingMemoryBound(to: Int32.self)).pointee = sktHeader!.humanID
         movingPtr += MemoryLayout<Int32>.size
-        UnsafeMutablePointer<Int8>(movingPtr.assumingMemoryBound(to: Int8.self)).pointee = sktHeader!.isAntitarget
-        movingPtr += MemoryLayout<Int8>.size
         UnsafeMutablePointer<Int8>(movingPtr.assumingMemoryBound(to: Int8.self)).pointee = sktHeader!.speechActivity
+        movingPtr += MemoryLayout<Int8>.size
+        UnsafeMutablePointer<Int8>(movingPtr.assumingMemoryBound(to: Int8.self)).pointee = sktHeader!.isAntitarget
         movingPtr += MemoryLayout<Int8>.size
         
         memcpy(movingPtr, imuDataPtr, MemoryLayout<Float32>.size * 16)

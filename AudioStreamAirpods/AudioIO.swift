@@ -52,7 +52,7 @@ class AudioIO {
     private var sendRingBuf: RingBuffer<Int16>
     weak var recvRingBuf: RingBuffer<Int16>?
     
-    var usingUdp: Bool = true
+    var usingUdp: Bool = false
     weak var tcpServer: AudioTcpServer?
     weak var udpClient: AudioUdpClient?
     
@@ -178,7 +178,8 @@ class AudioIO {
                 weakself.firstShot = false
                 
                 // flush buffer with 1.25x speed; to be implemented
-                if (weakself.dropOne && weakself.recvRingBuf!.count > 160 * 2 * weakself.playerDelay - Int(frameCount) * 2) {
+                if (weakself.dropOne && weakself.recvRingBuf!.count >
+                    160 * 2 * weakself.playerDelay - Int(frameCount) * 2) {
 //                    print(weakself.tcpSourceRingBuf!.count)
                     weakself.recvRingBuf!.popFront(2)
 //                    weakself.timePitchNode.rate = 1.25
@@ -263,9 +264,12 @@ class AudioIO {
             return "Bluetooth A2DP"
         } else if !routeDescription.outputs.filter({$0.portType == .headphones}).isEmpty {
             return "Wired Headphones"
+        } else if !routeDescription.outputs.filter({$0.portType == .bluetoothLE}).isEmpty {
+            return "Hearing Aids"
         } else {
-            return "Internal Speaker"
+            return "Built-in Speaker"
         }
+        
     }
     
     func playEcho(_ flag: Bool) {
@@ -273,7 +277,7 @@ class AudioIO {
     }
     
     func playRemoteSource(_ flag: Bool) {
-        recvRingBuf?.removeAll()
+        if flag { recvRingBuf?.removeAll() }
         tcpMuteMixer.volume = flag ? 1 : 0
     }
     
