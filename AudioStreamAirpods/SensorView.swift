@@ -42,7 +42,9 @@ struct SensorView: View {
                         .scaledToFit()
                         .frame(width: 30)
                         .foregroundColor(.gray)
-                }.sheet(isPresented: $showingSettingView) {
+                }.sheet(isPresented: $showingSettingView, onDismiss: {
+                    sensorVM.saveConfig()
+                }) {
                     SettingView()
                         .environmentObject(sensorVM)
                 }
@@ -102,8 +104,7 @@ struct SensorView: View {
                         .foregroundColor(.red)
                 }
             }.padding(.bottom, 40).padding(.leading, 50).padding(.trailing, 50)
-        }
-        
+        }.onAppear { sensorVM.loadConfig() }
     }
 }
 

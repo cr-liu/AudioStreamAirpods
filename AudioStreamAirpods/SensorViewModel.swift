@@ -42,9 +42,13 @@ class SensorViewModel: ObservableObject {
 //    private var isUpdatingMotion: Bool = false
 //    private var motionManager = CMMotionManager()
     
-    @Published var usingUdp: Bool = false
+    @Published var netConf: NetConfig = NetConfig(
+        usingUDP: false,
+        remotePort: 1234,
+        listenPort: 12345,
+        remoteHost: "192.168.2.101"
+    )
     @Published var listenHost: String = "LocalHost"
-    @Published var listenPort: Int = 12345
     @Published var isSending: Bool = false
     @Published var isAntitarget: Bool = false
     weak var tcpServer: AudioTcpServer?
@@ -66,9 +70,7 @@ class SensorViewModel: ObservableObject {
     //    var headAccX: Float32 = -10000
     //    var headAccY: Float32 = -10000
     //    var headAccZ: Float32 = -10000
-    
-    @Published var remoteHost: String = "192.168.2.103"
-    @Published var remotePort: Int = 12345
+
     @Published var isReceiving: Bool = false
     @Published var isStereo: Bool = true
     weak var tcpClient: AudioTcpClient?
@@ -101,6 +103,24 @@ class SensorViewModel: ObservableObject {
         }
     }
     
+    func loadConfig() {
+        ConfigStore.load(netConf: self.netConf) { result in
+            switch result {
+            case .failure(let error):
+                fatalError(error.localizedDescription)
+            case .success(let conf):
+                self.netConf = conf
+            }
+        }
+    }
+    
+    func saveConfig() {
+        ConfigStore.save(netConf: self.netConf) { result in
+            if case .failure(let error) = result {
+                fatalError(error.localizedDescription)
+            }
+        }
+    }
 
     // Message
     func addMessage(_ msg: String) {
@@ -175,16 +195,23 @@ class SensorViewModel: ObservableObject {
     }
     
     func playerDelayChanged(to newDelay: Int) {
+        if (newDelay == audioIO!.playerDelay) {
+            return
+        }
+        if (newDelay * 10 > delayThreshold) {
+            delayThresholdChanged(to: newDelay * 10)
+        }
         if (newDelay < 1) {
-            audioIO!.playerDelay = 1
+            audioIO!.setPlayerDelay(to: 1)
         } else if (newDelay > maxDelay) {
-            audioIO!.playerDelay = maxDelay
+            audioIO!.setPlayerDelay(to: maxDelay)
         } else {
-            audioIO!.playerDelay = newDelay
+            audioIO!.setPlayerDelay(to: newDelay)
         }
     }
     
     func delayThresholdChanged(to newThreshold: Int) {
+        delayThreshold = newThreshold
         audioIO?.delayThreshold = newThreshold / 10
     }
     
@@ -254,7 +281,7 @@ class SensorViewModel: ObservableObject {
     
     // Socket type
     func changeSktType() {
-        audioIO?.usingUdp = usingUdp
+        audioIO?.usingUdp = netConf.usingUdp
         stopSender()
         stopReceiver()
     }
@@ -289,7 +316,7 @@ class SensorViewModel: ObservableObject {
     }
     
     func startSender() {
-        if usingUdp {
+        if netConf.usingUdp {
             udpClient?.asyncRun()
         } else {
             tcpServer?.asyncRun()
@@ -326,7 +353,7 @@ class SensorViewModel: ObservableObject {
     }
     
     func startReceiver() {
-        if usingUdp {
+        if netConf.usingUdp {
             udpServer?.AsyncStart()
         } else {
             tcpClient?.AsyncStart()

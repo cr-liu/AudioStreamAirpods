@@ -74,20 +74,20 @@ struct SettingView: View {
                 VStack(alignment: .leading) {
                     Text("Remote IP: ")
                         .foregroundColor(.secondary)
-                    TextField("192.168.2.103", text: $sensorVM.remoteHost)
+                    TextField("192.168.2.103", text: $sensorVM.netConf.remoteHost)
                         .foregroundColor(Color(UIColor.darkGray))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onChange(of: sensorVM.remoteHost, perform: { value in
+                        .onChange(of: sensorVM.netConf.remoteHost, perform: { value in
                             sensorVM.remoteHostChanged(to: value)
                         })
                 }
                 VStack(alignment: .leading) {
                     Text("Port: ")
                         .foregroundColor(.secondary)
-                    TextField("12345", value: $sensorVM.remotePort, formatter: NumberFormatter())
+                    TextField("12345", value: $sensorVM.netConf.remotePort, formatter: NumberFormatter())
                         .foregroundColor(Color(UIColor.darkGray))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onChange(of: sensorVM.remotePort, perform: { value in
+                        .onChange(of: sensorVM.netConf.remotePort, perform: { value in
                             sensorVM.remotePortChanged(to: value)
                         })
                 }
@@ -105,24 +105,22 @@ struct SettingView: View {
                 VStack(alignment: .leading) {
                     Text("Listen on: ")
                         .foregroundColor(.secondary)
-                    TextField("12345", value: $sensorVM.listenPort, formatter: NumberFormatter())
+                    TextField("12345", value: $sensorVM.netConf.listenPort, formatter: NumberFormatter())
                         .foregroundColor(Color(UIColor.darkGray))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onChange(of: sensorVM.listenPort, perform: { value in
+                        .onChange(of: sensorVM.netConf.listenPort, perform: { value in
                             sensorVM.sendingPortChanged(to: value)
                         })
                 }
             }.padding(.bottom, 10)
                 
-            Toggle(isOn: $sensorVM.usingUdp) {
-                Text(sensorVM.usingUdp ? "UDP" : "TCP")
+            Toggle(isOn: $sensorVM.netConf.usingUdp) {
+                Text(sensorVM.netConf.usingUdp ? "UDP" : "TCP")
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .trailing)
-            }.onChange(of: sensorVM.usingUdp) { _ in
+            }.onChange(of: sensorVM.netConf.usingUdp) { _ in
                 sensorVM.changeSktType()
             }
-            
-            
         }.padding()
     }
 }

@@ -24,7 +24,7 @@ class Backend {
         sensorVM.headMotionManager = headMotionManager
         sensorVM.audioIO = audioIO
         audioIO.viewModel = sensorVM
-        audioIO.usingUdp = sensorVM.usingUdp
+        audioIO.usingUdp = sensorVM.netConf.usingUdp
         
         let imuPtr = sensorVM.imuData4Sender.withUnsafeBytes{ $0 }.baseAddress!
         
@@ -34,7 +34,7 @@ class Backend {
         tcpServer.viewModel = sensorVM
         tcpServer.h80D10ms16kHandler.viewModel = sensorVM
         audioIO.tcpServer = tcpServer
-        tcpServer.port = sensorVM.listenPort
+        tcpServer.port = sensorVM.netConf.listenPort
         if let ifAddress = sensorVM.getIPAddress() {
             sensorVM.listenHost = ifAddress
             tcpServer.host = ifAddress
@@ -53,8 +53,8 @@ class Backend {
         sensorVM.tcpClient = tcpClient
         tcpClient.viewModel = sensorVM
         tcpClient.h80D10ms16kHandler.viewModel = sensorVM
-        tcpClient.host = sensorVM.remoteHost
-        tcpClient.port = sensorVM.remotePort
+        tcpClient.host = sensorVM.netConf.remoteHost
+        tcpClient.port = sensorVM.netConf.remotePort
         
         // Udp receiver
         udpServer = AudioUdpServer()

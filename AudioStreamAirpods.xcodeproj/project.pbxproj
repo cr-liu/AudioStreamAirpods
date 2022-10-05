@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5A18D3C128ED67020003E4C7 /* ConfigStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A18D3C028ED67020003E4C7 /* ConfigStore.swift */; };
 		5A23080827954D03001DCE5E /* BluetoothCentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A23080727954D03001DCE5E /* BluetoothCentralManager.swift */; };
 		5A23080A279564CD001DCE5E /* BluetoothView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A230809279564CD001DCE5E /* BluetoothView.swift */; };
 		5A23080C2797C06C001DCE5E /* Backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A23080B2797C06C001DCE5E /* Backend.swift */; };
@@ -34,6 +35,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5A18D3C028ED67020003E4C7 /* ConfigStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigStore.swift; sourceTree = "<group>"; };
 		5A23080727954D03001DCE5E /* BluetoothCentralManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothCentralManager.swift; sourceTree = "<group>"; };
 		5A230809279564CD001DCE5E /* BluetoothView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothView.swift; sourceTree = "<group>"; };
 		5A23080B2797C06C001DCE5E /* Backend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backend.swift; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 				5A23080727954D03001DCE5E /* BluetoothCentralManager.swift */,
 				5A23080B2797C06C001DCE5E /* Backend.swift */,
 				5A47AFCA265238E5000BAD9A /* SensorViewModel.swift */,
+				5A18D3C028ED67020003E4C7 /* ConfigStore.swift */,
 				5A3F88CD264CB03800A19E5E /* Assets.xcassets */,
 				5A47AFCC265501A0000BAD9A /* views */,
 				5A3F88D2264CB03800A19E5E /* Info.plist */,
@@ -236,6 +239,7 @@
 				5ADC885F2661B414002C4F84 /* AudioTcpClient.swift in Sources */,
 				5A3F88D9264CE49200A19E5E /* SensorView.swift in Sources */,
 				5A8478A62740E3CD00ECFCEF /* RingBuffer.swift in Sources */,
+				5A18D3C128ED67020003E4C7 /* ConfigStore.swift in Sources */,
 				5A3F88DD264D090500A19E5E /* AudioIO.swift in Sources */,
 				5A47AFCB265238E5000BAD9A /* SensorViewModel.swift in Sources */,
 				5A23080A279564CD001DCE5E /* BluetoothView.swift in Sources */,

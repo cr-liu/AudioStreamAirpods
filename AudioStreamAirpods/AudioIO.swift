@@ -254,6 +254,11 @@ class AudioIO {
         state = .stopped
     }
     
+    func setPlayerDelay(to newDelay: Int) {
+        self.playerDelay = newDelay
+        self.firstShot = true
+    }
+    
     func isStopped() -> Bool {
         return state == .stopped
     }
